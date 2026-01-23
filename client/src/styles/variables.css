@@ -1,0 +1,106 @@
+/* Root Variables */
+:root {
+  --primary: #10B981;
+  --secondary: #F59E0B;
+  --accent: #8B5CF6;
+  --dark: #1F2937;
+  --light: #F3F4F6;
+  --white: #FFFFFF;
+  --border: #E5E7EB;
+  --text: #111827;
+  --text-light: #6B7280;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+  background-color: var(--white);
+  line-height: 1.6;
+}
+
+.home {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Global Button Styles */
+.btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #059669);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+.btn-secondary:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.btn-large {
+  padding: 16px 40px;
+  font-size: 18px;
+  min-width: 200px;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text);
+  text-align: center;
+}
+
+.section-subtitle {
+  font-size: 18px;
+  color: var(--text-light);
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 28px;
+  }
+
+  .section-subtitle {
+    font-size: 16px;
+  }
+
+  .btn-large {
+    min-width: auto;
+    width: 100%;
+  }
+}
