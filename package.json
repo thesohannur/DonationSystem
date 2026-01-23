@@ -1,0 +1,20 @@
+{
+  "name": "shohay-donation-system",
+  "version": "1.0.0",
+  "description": "A full-stack MERN donation management system",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm start",
+    "client": "cd client && npm start",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm start",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install"
+  },
+  "keywords": ["donation", "ngo", "mern", "fundraising"],
+  "author": "Shohay Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
