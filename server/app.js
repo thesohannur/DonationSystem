@@ -11,11 +11,7 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
-app.use(cors({
-  origin: "http://localhost:3002", // React dev server
-  methods: ["GET", "POST", "PATCH", "DELETE"],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 
 // Request logger (middleware)
