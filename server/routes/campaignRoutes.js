@@ -9,11 +9,15 @@ const {
   approveCampaign,
   rejectCampaign,
   deleteCampaign,
+  getActiveCampaigns,
+  getFilteredCampaigns
 } = require("../controllers/campaignController");
 const { protect, authorize } = require("../middleware/auth");
 
 // GET /api/campaigns - Get all campaigns (Public)
 router.get("/", getAllCampaigns);
+router.get("/active", getActiveCampaigns);
+router.get("/filter", getFilteredCampaigns);
 
 // GET /api/campaigns/ngo/:email - Get campaigns by NGO
 router.get("/ngo/:email", protect, getCampaignsByNGO);

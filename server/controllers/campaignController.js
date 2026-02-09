@@ -130,6 +130,70 @@ const deleteCampaign = async (req, res) => {
   }
 };
 
+// @desc    Get campaigns with filters
+// @route   GET /api/campaigns/filter
+// @access  Public/Private
+const getFilteredCampaigns = async (req, res) => {
+  try {
+    const { acceptsMoney, acceptsTime, sortBy } = req.query;
+    const currentDate = new Date();
+
+    let query = {
+      approved: true,
+      expirationTime: { $gt: currentDate },
+    };
+
+    if (acceptsMoney !== undefined) {
+      query.acceptsMoney = acceptsMoney === 'true';
+    }
+
+    if (acceptsTime !== undefined) {
+      query.acceptsTime = acceptsTime === 'true';
+    }
+
+    let sortOptions = { creationTime: -1 };
+    if (sortBy === 'expiring_soon') {
+      sortOptions = { expirationTime: 1 };
+    } else if (sortBy === 'amount_raised') {
+      sortOptions = { amount: -1 };
+    }
+
+    const campaigns = await Campaign.find(query).sort(sortOptions);
+
+    res.status(200).json({ 
+      success: true, 
+      count: campaigns.length, 
+      data: campaigns 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Get all active campaigns for donors
+// @route   GET /api/campaigns/active
+// @access  Public/Private
+const getActiveCampaigns = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    
+    const campaigns = await Campaign.find({
+      approved: true,
+      expirationTime: { $gt: currentDate },
+    })
+      .populate("ngoEmail")
+      .sort({ creationTime: -1 });
+
+    res.status(200).json({ 
+      success: true, 
+      count: campaigns.length, 
+      data: campaigns 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getAllCampaigns,
   getCampaign,
@@ -139,4 +203,9 @@ module.exports = {
   approveCampaign,
   rejectCampaign,
   deleteCampaign,
+  getActiveCampaigns,
+  getFilteredCampaigns
 };
+
+
+

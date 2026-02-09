@@ -133,6 +133,127 @@ const deletePayment = async (req, res) => {
   }
 };
 
+// @desc    Create a donation
+// @route   POST /api/payments/donate
+// @access  Private (Donor)
+const createDonation = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { campaignId, amount } = req.body;
+
+    // Validate amount
+    if (!amount || amount <= 0) {
+      await session.abortTransaction();
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid donation amount" 
+      });
+    }
+
+    // Get donor
+    const donor = await Donor.findOne({ userId: req.user._id }).session(session);
+    if (!donor) {
+      await session.abortTransaction();
+      return res.status(404).json({ 
+        success: false, 
+        message: "Donor not found" 
+      });
+    }
+
+    // Check if donor is approved
+    if (!donor.approved) {
+      await session.abortTransaction();
+      return res.status(403).json({ 
+        success: false, 
+        message: "Your donor account is pending approval" 
+      });
+    }
+
+    // Get campaign
+    const campaign = await Campaign.findById(campaignId).session(session);
+    if (!campaign) {
+      await session.abortTransaction();
+      return res.status(404).json({ 
+        success: false, 
+        message: "Campaign not found" 
+      });
+    }
+
+    // Validate campaign
+    if (!campaign.approved) {
+      await session.abortTransaction();
+      return res.status(400).json({ 
+        success: false, 
+        message: "Campaign is not approved" 
+      });
+    }
+
+    if (new Date() > campaign.expirationTime) {
+      await session.abortTransaction();
+      return res.status(400).json({ 
+        success: false, 
+        message: "Campaign has expired" 
+      });
+    }
+
+    if (!campaign.acceptsMoney) {
+      await session.abortTransaction();
+      return res.status(400).json({ 
+        success: false, 
+        message: "Campaign does not accept monetary donations" 
+      });
+    }
+
+    // Get NGO
+    const ngo = await NGO.findOne({ email: campaign.ngoEmail }).session(session);
+    if (!ngo) {
+      await session.abortTransaction();
+      return res.status(404).json({ 
+        success: false, 
+        message: "NGO not found" 
+      });
+    }
+
+    // Create payment (initially PENDING)
+    const payment = await Payment.create([{
+      donorId: donor._id,
+      ngoId: ngo._id,
+      amount: amount,
+      status: "PENDING",
+    }], { session });
+
+    // Simulate payment processing (in real app, integrate payment gateway)
+    // For now, we'll mark it as SUCCESS immediately
+    payment[0].status = "SUCCESS";
+    await payment[0].save({ session });
+
+    // Update donor's total donated
+    donor.totalDonated += amount;
+    await donor.save({ session });
+
+    // Update campaign amount and add payment to donations array
+    campaign.amount += amount;
+    campaign.donations.push(payment[0]._id);
+    await campaign.save({ session });
+
+    await session.commitTransaction();
+
+    res.status(201).json({ 
+      success: true, 
+      message: "Donation successful", 
+      data: payment[0] 
+    });
+
+  } catch (error) {
+    await session.abortTransaction();
+    res.status(500).json({ success: false, message: error.message });
+  } finally {
+    session.endSession();
+  }
+};
+
 module.exports = {
   getAllPayments,
   getPayment,
@@ -141,4 +262,8 @@ module.exports = {
   createPayment,
   updatePaymentStatus,
   deletePayment,
+  createDonation
 };
+
+
+

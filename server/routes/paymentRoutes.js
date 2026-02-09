@@ -8,11 +8,13 @@ const {
   createPayment,
   updatePaymentStatus,
   deletePayment,
+  createDonation
 } = require("../controllers/paymentController");
 const { protect, authorize } = require("../middleware/auth");
 
 // GET /api/payments - Get all payments (Admin only)
 router.get("/", protect, authorize("ADMIN"), getAllPayments);
+router.post("/donate", protect, authorize("DONOR"), createDonation);
 
 // GET /api/payments/donor/:donorId - Get payments by donor
 router.get("/donor/:donorId", protect, getPaymentsByDonor);
