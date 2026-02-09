@@ -1,0 +1,134 @@
+{
+  "info": {
+    "_postman_id": "auth-collection",
+    "name": "DonationSystem Auth API",
+    "description": "Authentication API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register Donor",
+      "id": "f33c8ef1-63ed-46ea-9627-9dcb92703f8d",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"donor@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"DONOR\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"1234567890\",\n  \"address\": \"123 Main St, City\",\n  \"occupation\": \"Engineer\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Register NGO",
+      "id": "07c1b0e4-d0fd-4942-ab10-af813bcccca3",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"ngo@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"NGO\",\n  \"registrationNumber\": \"NGO-12345\",\n  \"organizationName\": \"Helping Hands\",\n  \"contactPerson\": \"Jane Smith\",\n  \"phoneNumber\": \"0987654321\",\n  \"address\": \"456 Charity Lane\",\n  \"website\": \"https://helpinghands.org\",\n  \"description\": \"We help people in need.\",\n  \"focusAreas\": [\"Education\", \"Health\"]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Donor Login",
+      "id": "15385b80-0d7d-486a-9506-2a330608a963",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"donor@example.com\",\n  \"password\": \"password123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "NGO Login",
+      "id": "9c0c1d28-3a6c-46cd-911b-15ba733d65de",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"donor@example.com\",\n  \"password\": \"password123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "id": "5c2c1252-d6af-4703-902b-f6d9b203f20b",
+      "key": "baseUrl",
+      "value": "http://localhost:5002",
+      "type": "string"
+    }
+  ]
+}

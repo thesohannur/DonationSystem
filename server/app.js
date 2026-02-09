@@ -1,13 +1,17 @@
 const express = require('express');
 const cors    = require('cors');
+const authRoutes = require('./routes/authRoutes');
+const donorRoutes = require('./routes/donorRoutes');
+const ngoRoutes = require('./routes/ngoRoutes');
+const campaignRoutes = require('./routes/campaignRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const volunteerOpportunityRoutes = require('./routes/volunteerOpportunityRoutes');
+const volunteerRoutes = require('./routes/volunteerRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
-app.use(cors({
-  origin: "http://localhost:3002", // React dev server
-  methods: ["GET", "POST", "PATCH", "DELETE"],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 
 // Request logger (middleware)
@@ -19,6 +23,16 @@ app.use((req, res, next) => {
 app.get('/api/health', (req, res)=>{
     res.status(200).json({status: 'OK'});
 });
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/donors', donorRoutes);
+app.use('/api/ngos', ngoRoutes);
+app.use('/api/campaigns', campaignRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/volunteer-opportunities', volunteerOpportunityRoutes);
+app.use('/api/volunteers', volunteerRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
