@@ -13,6 +13,7 @@ function App() {
         <Route path="/auth/login" element={<Login />} /> */}
         
         {/* Other Routes */}
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </Router>
   );
