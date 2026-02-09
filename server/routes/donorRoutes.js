@@ -10,8 +10,8 @@ const {
 } = require("../controllers/donorController");
 const { protect, authorize } = require("../middleware/auth");
 
-// GET /api/donors - Get all donors (Admin only)
-router.get("/", protect, authorize("ADMIN"), getAllDonors);
+// GET /api/donors - Get all donors (Admin or NGO)
+router.get("/", protect, authorize("ADMIN", "NGO"), getAllDonors);
 
 // GET /api/donors/user/:userId - Get donor by userId
 router.get("/user/:userId", protect, getDonorByUserId);

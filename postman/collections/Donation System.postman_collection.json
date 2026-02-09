@@ -1,0 +1,18 @@
+{
+  "info": {
+    "_postman_id": "b984d000-7c34-490c-843a-91152512b81c",
+    "name": "Donation System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "health check",
+      "id": "39f64243-a468-4ac2-b695-43c99d24eb0e",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}

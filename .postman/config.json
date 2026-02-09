@@ -1,0 +1,54 @@
+{
+  "workspace": {
+    "id": "5d176fd6-7956-47e1-8e24-15006815e6c3"
+  },
+  "entities": {
+    "environments": [],
+    "flows": [],
+    "globals": [],
+    "mocks": [],
+    "specs": [],
+    "collections": [
+      {
+        "id": "auth-collection",
+        "name": "DonationSystem Auth API",
+        "path": "postman/collections/Auth.postman_collection.json"
+      },
+      {
+        "id": "admin-collection",
+        "name": "DonationSystem Admin API",
+        "path": "postman/collections/Admin.postman_collection.json"
+      },
+      {
+        "id": "campaigns-collection",
+        "name": "DonationSystem Campaigns API",
+        "path": "postman/collections/Campaigns.postman_collection.json"
+      },
+      {
+        "id": "donors-collection",
+        "name": "DonationSystem Donors API",
+        "path": "postman/collections/Donors.postman_collection.json"
+      },
+      {
+        "id": "ngos-collection",
+        "name": "DonationSystem NGOs API",
+        "path": "postman/collections/NGOs.postman_collection.json"
+      },
+      {
+        "id": "payments-collection",
+        "name": "DonationSystem Payments API",
+        "path": "postman/collections/Payments.postman_collection.json"
+      },
+      {
+        "id": "volunteer-opportunities-collection",
+        "name": "DonationSystem Volunteer Opportunities API",
+        "path": "postman/collections/VolunteerOpportunities.postman_collection.json"
+      },
+      {
+        "id": "volunteer-applications-collection",
+        "name": "DonationSystem Volunteer Applications API",
+        "path": "postman/collections/VolunteerApplications.postman_collection.json"
+      }
+    ]
+  }
+}

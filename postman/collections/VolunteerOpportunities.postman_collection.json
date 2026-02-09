@@ -1,0 +1,202 @@
+{
+    "info": {
+        "_postman_id": "volunteer-opportunities-collection",
+        "name": "DonationSystem Volunteer Opportunities API",
+        "description": "Volunteer Opportunities API endpoints",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Get All Opportunities",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/api/volunteer-opportunities?active=true",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "api",
+                        "volunteer-opportunities"
+                    ],
+                    "query": [
+                        {
+                            "key": "active",
+                            "value": "true",
+                            "description": "Optional filter"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Opportunities by NGO",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/api/volunteer-opportunities/ngo/:ngoId",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "api",
+                        "volunteer-opportunities",
+                        "ngo",
+                        ":ngoId"
+                    ],
+                    "variable": [
+                        {
+                            "key": "ngoId",
+                            "value": ""
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Single Opportunity",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/api/volunteer-opportunities/:id",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "api",
+                        "volunteer-opportunities",
+                        ":id"
+                    ],
+                    "variable": [
+                        {
+                            "key": "id",
+                            "value": ""
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Create Opportunity",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{ngoToken}}",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"title\": \"Teaching Assistant\",\n  \"description\": \"Help teach children in rural areas.\",\n  \"location\": \"Dhaka\",\n  \"skillsRequired\": [\"Teaching\", \"Communication\"],\n  \"ngoId\": \"replace_with_ngo_id\",\n  \"startDate\": \"2024-06-01T09:00:00.000Z\",\n  \"endDate\": \"2024-06-30T17:00:00.000Z\",\n  \"deadline\": \"2024-05-25T23:59:59.000Z\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/volunteer-opportunities",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "api",
+                        "volunteer-opportunities"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Update Opportunity",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{ngoToken}}",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"title\": \"Senior Teaching Assistant\",\n  \"location\": \"Chittagong\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/volunteer-opportunities/:id",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "api",
+                        "volunteer-opportunities",
+                        ":id"
+                    ],
+                    "variable": [
+                        {
+                            "key": "id",
+                            "value": ""
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Delete Opportunity",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{ngoToken}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/volunteer-opportunities/:id",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "api",
+                        "volunteer-opportunities",
+                        ":id"
+                    ],
+                    "variable": [
+                        {
+                            "key": "id",
+                            "value": ""
+                        }
+                    ]
+                }
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:5002",
+            "type": "string"
+        },
+        {
+            "key": "ngoToken",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}
