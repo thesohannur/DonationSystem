@@ -32,6 +32,38 @@
             "response": []
         },
         {
+            "name": "Get NGO by User ID",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/ngos/user/:userId",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "api",
+                        "ngos",
+                        "user",
+                        ":userId"
+                    ],
+                    "variable": [
+                        {
+                            "key": "userId",
+                            "value": ""
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
             "name": "Get Single NGO",
             "request": {
                 "method": "GET",
