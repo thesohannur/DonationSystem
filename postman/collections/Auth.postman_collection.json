@@ -65,6 +65,35 @@
       "response": []
     },
     {
+      "name": "Register Admin",
+      "id": "8efc3ee6-3fda-4292-b243-7910753a748b",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"ADMIN\",\n  \"fullName\": \"Super Admin\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "Donor Login",
       "id": "15385b80-0d7d-486a-9506-2a330608a963",
       "request": {
@@ -96,6 +125,35 @@
     {
       "name": "NGO Login",
       "id": "9c0c1d28-3a6c-46cd-911b-15ba733d65de",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"donor@example.com\",\n  \"password\": \"password123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Admin Login",
+      "id": "e8615ad3-bea9-4aea-944c-cad364696704",
       "request": {
         "method": "POST",
         "header": [],

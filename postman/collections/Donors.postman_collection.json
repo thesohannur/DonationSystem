@@ -13,7 +13,7 @@
                 "header": [
                     {
                         "key": "Authorization",
-                        "value": "Bearer {{adminToken}}",
+                        "value": "Bearer {{token}}",
                         "type": "text"
                     }
                 ],
@@ -25,6 +25,38 @@
                     "path": [
                         "api",
                         "donors"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Donor by User ID",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/donors/user/:userId",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "api",
+                        "donors",
+                        "user",
+                        ":userId"
+                    ],
+                    "variable": [
+                        {
+                            "key": "userId",
+                            "value": ""
+                        }
                     ]
                 }
             },
