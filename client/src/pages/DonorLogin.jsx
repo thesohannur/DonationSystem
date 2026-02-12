@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Lock, User, AlertCircle } from 'lucide-react';
 
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
+
 export default function DonorLogin() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        donorId: '',
+        email: '',
         password: ''
     });
     const [error, setError] = useState('');
@@ -25,24 +27,32 @@ export default function DonorLogin() {
         setError('');
 
         // Validation
-        if (!formData.donorId || !formData.password) {
+        if (!formData.email || !formData.password) {
             setError('Please fill in all fields');
             setIsLoading(false);
             return;
         }
 
-        // Simulate authentication (replace with actual API call)
-        setTimeout(() => {
-            // Demo credentials - replace with actual authentication
-            if (formData.donorId === 'donor' && formData.password === 'donor123') {
-                // Store auth token or session
-                localStorage.setItem('donorAuth', 'true');
-                navigate('/donor/dashboard');
-            } else {
-                setError('Invalid Donor ID or Password');
+        try {
+            const res = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: formData.email, password: formData.password })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setError(data.message || `Login failed (${res.status})`);
+                setIsLoading(false);
+                return;
             }
+            localStorage.setItem('token', data.token);
+            navigate('/donor/dashboard');
+        } catch (err) {
+            console.error('Donor login error', err);
+            setError(err.message || 'Network error');
+        } finally {
             setIsLoading(false);
-        }, 1000);
+        }
     };
 
     return (
@@ -126,14 +136,14 @@ export default function DonorLogin() {
                     {/* Donor ID Field */}
                     <div style={{ marginBottom: '24px' }}>
                         <label style={{
-                            display: 'block',
-                            color: '#374151',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            marginBottom: '8px'
-                        }}>
-                            Donor ID
-                        </label>
+                                display: 'block',
+                                color: '#374151',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                marginBottom: '8px'
+                            }}>
+                                Email
+                            </label>
                         <div style={{ position: 'relative' }}>
                             <User
                                 size={20}
@@ -146,11 +156,11 @@ export default function DonorLogin() {
                                 }}
                             />
                             <input
-                                type="text"
-                                name="donorId"
-                                value={formData.donorId}
+                                type="email"
+                                name="email"
+                                value={formData.email}
                                 onChange={handleChange}
-                                placeholder="Enter your donor ID"
+                                placeholder="you@example.com"
                                 style={{
                                     width: '100%',
                                     padding: '14px 16px 14px 48px',

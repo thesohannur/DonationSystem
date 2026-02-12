@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Lock, User, AlertCircle } from 'lucide-react';
 
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
+
 export default function AdminLogin() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        adminId: '',
+        email: '',
         password: ''
     });
     const [error, setError] = useState('');
@@ -25,24 +27,33 @@ export default function AdminLogin() {
         setError('');
 
         // Validation
-        if (!formData.adminId || !formData.password) {
+        if (!formData.email || !formData.password) {
             setError('Please fill in all fields');
             setIsLoading(false);
             return;
         }
 
-        // Simulate authentication (replace with actual API call)
-        setTimeout(() => {
-            // Demo credentials - replace with actual authentication
-            if (formData.adminId === 'admin' && formData.password === 'admin123') {
-                // Store auth token or session
-                localStorage.setItem('adminAuth', 'true');
-                navigate('/admin');
-            } else {
-                setError('Invalid Admin ID or Password');
+        try {
+            const res = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: formData.email, password: formData.password })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setError(data.message || `Login failed (${res.status})`);
+                setIsLoading(false);
+                return;
             }
+            // store token
+            localStorage.setItem('token', data.token);
+            navigate('/admin');
+        } catch (err) {
+            console.error('Login error', err);
+            setError(err.message || 'Network error');
+        } finally {
             setIsLoading(false);
-        }, 1000);
+        }
     };
 
     return (
@@ -126,14 +137,14 @@ export default function AdminLogin() {
                     {/* Admin ID Field */}
                     <div style={{ marginBottom: '24px' }}>
                         <label style={{
-                            display: 'block',
-                            color: '#374151',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            marginBottom: '8px'
-                        }}>
-                            Admin ID
-                        </label>
+                                display: 'block',
+                                color: '#374151',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                marginBottom: '8px'
+                            }}>
+                                Email
+                            </label>
                         <div style={{ position: 'relative' }}>
                             <User
                                 size={20}
@@ -146,11 +157,11 @@ export default function AdminLogin() {
                                 }}
                             />
                             <input
-                                type="text"
-                                name="adminId"
-                                value={formData.adminId}
+                                type="email"
+                                name="email"
+                                value={formData.email}
                                 onChange={handleChange}
-                                placeholder="Enter your admin ID"
+                                placeholder="admin@example.com"
                                 style={{
                                     width: '100%',
                                     padding: '14px 16px 14px 48px',

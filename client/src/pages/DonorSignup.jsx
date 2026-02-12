@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Lock, User, Mail, AlertCircle, CheckCircle, Hash } from 'lucide-react';
+import { Heart, Lock, User, Mail, AlertCircle, CheckCircle, Hash, MapPin, Briefcase } from 'lucide-react';
 
 export default function DonorSignup() {
     const navigate = useNavigate();
@@ -10,7 +10,9 @@ export default function DonorSignup() {
         email: '',
         phone: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        address: '',
+        occupation: ''
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -53,8 +55,8 @@ export default function DonorSignup() {
         // Phone validation
         if (!formData.phone.trim()) {
             newErrors.phone = 'Phone number is required';
-        } else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
-            newErrors.phone = 'Please enter a valid phone number';
+        } else if (!/^\d{11}$/.test(formData.phone.replace(/\D/g, ''))) {
+            newErrors.phone = 'Please enter a valid 11-digit phone number';
         }
 
         // Password validation
@@ -83,19 +85,38 @@ export default function DonorSignup() {
         }
 
         setIsLoading(true);
-
-        // Simulate API call (replace with actual API call)
-        setTimeout(() => {
-            // Here you would normally send data to your backend
-            console.log('Signup data:', formData);
+        try {
+            const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
+            const payload = {
+                email: formData.email,
+                password: formData.password,
+                role: 'DONOR',
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                phoneNumber: formData.phone,
+                address: formData.address,
+                occupation: formData.occupation
+            };
+            const res = await fetch(`${API_BASE}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setErrors({ form: data.message || `Registration failed (${res.status})` });
+                setIsLoading(false);
+                return;
+            }
             setSuccess(true);
+            localStorage.setItem('token', data.token);
             setIsLoading(false);
-            
-            // Redirect to login after 2 seconds
-            setTimeout(() => {
-                navigate('/donor/login');
-            }, 2000);
-        }, 1500);
+            setTimeout(() => navigate('/donor/login'), 1500);
+        } catch (err) {
+            console.error('Donor signup error', err);
+            setErrors({ form: err.message || 'Network error' });
+            setIsLoading(false);
+        }
     };
 
     // Success screen
@@ -221,6 +242,26 @@ export default function DonorSignup() {
 
                 {/* Form Section */}
                 <form onSubmit={handleSubmit} style={{ padding: '40px 30px' }}>
+                    {errors.form && (
+                        <div style={{
+                            background: '#fee2e2',
+                            border: '1px solid #fca5a5',
+                            borderRadius: '10px',
+                            padding: '12px 16px',
+                            marginBottom: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px'
+                        }}>
+                            <AlertCircle size={20} color="#dc2626" />
+                            <p style={{
+                                color: '#dc2626',
+                                fontSize: '14px',
+                                margin: 0,
+                                fontWeight: '500'
+                            }}>{errors.form}</p>
+                        </div>
+                    )}
                     {/* First Name & Last Name Row */}
                     <div style={{ 
                         display: 'grid', 
@@ -417,7 +458,7 @@ export default function DonorSignup() {
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
-                                placeholder="10-digit phone number"
+                                placeholder="11-digit phone number"
                                 style={{
                                     width: '100%',
                                     padding: '14px 16px 14px 48px',
@@ -571,6 +612,130 @@ export default function DonorSignup() {
                                 margin: '6px 0 0 0'
                             }}>
                                 {errors.confirmPassword}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Address Field */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <label style={{
+                            display: 'block',
+                            color: '#374151',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            marginBottom: '8px'
+                        }}>
+                            Address
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                            <MapPin
+                                size={20}
+                                color="#9ca3af"
+                                style={{
+                                    position: 'absolute',
+                                    left: '16px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    pointerEvents: 'none'
+                                }}
+                            />
+                            <input
+                                type="text"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleChange}
+                                placeholder="Street address, city, state"
+                                style={{
+                                    width: '100%',
+                                    padding: '14px 16px 14px 48px',
+                                    border: `2px solid ${errors.address ? '#ef4444' : '#e5e7eb'}`,
+                                    borderRadius: '10px',
+                                    fontSize: '15px',
+                                    transition: 'all 0.3s',
+                                    outline: 'none',
+                                    boxSizing: 'border-box'
+                                }}
+                                onFocus={(e) => {
+                                    if (!errors.address) {
+                                        e.target.style.borderColor = '#667eea';
+                                        e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = errors.address ? '#ef4444' : '#e5e7eb';
+                                    e.target.style.boxShadow = 'none';
+                                }}
+                            />
+                        </div>
+                        {errors.address && (
+                            <p style={{
+                                color: '#ef4444',
+                                fontSize: '12px',
+                                margin: '6px 0 0 0'
+                            }}>
+                                {errors.address}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Occupation Field */}
+                    <div style={{ marginBottom: '32px' }}>
+                        <label style={{
+                            display: 'block',
+                            color: '#374151',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            marginBottom: '8px'
+                        }}>
+                            Occupation
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                            <Briefcase
+                                size={20}
+                                color="#9ca3af"
+                                style={{
+                                    position: 'absolute',
+                                    left: '16px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    pointerEvents: 'none'
+                                }}
+                            />
+                            <input
+                                type="text"
+                                name="occupation"
+                                value={formData.occupation}
+                                onChange={handleChange}
+                                placeholder="Your job title or profession"
+                                style={{
+                                    width: '100%',
+                                    padding: '14px 16px 14px 48px',
+                                    border: `2px solid ${errors.occupation ? '#ef4444' : '#e5e7eb'}`,
+                                    borderRadius: '10px',
+                                    fontSize: '15px',
+                                    transition: 'all 0.3s',
+                                    outline: 'none',
+                                    boxSizing: 'border-box'
+                                }}
+                                onFocus={(e) => {
+                                    if (!errors.occupation) {
+                                        e.target.style.borderColor = '#667eea';
+                                        e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = errors.occupation ? '#ef4444' : '#e5e7eb';
+                                    e.target.style.boxShadow = 'none';
+                                }}
+                            />
+                        </div>
+                        {errors.occupation && (
+                            <p style={{
+                                color: '#ef4444',
+                                fontSize: '12px',
+                                margin: '6px 0 0 0'
+                            }}>
+                                {errors.occupation}
                             </p>
                         )}
                     </div>

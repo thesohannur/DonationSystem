@@ -7,7 +7,6 @@ export default function AdminSignup() {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
-        adminId: '',
         email: '',
         password: '',
         confirmPassword: ''
@@ -43,13 +42,6 @@ export default function AdminSignup() {
             newErrors.lastName = 'Last name is required';
         }
 
-        // Admin ID validation
-        if (!formData.adminId.trim()) {
-            newErrors.adminId = 'Admin ID is required';
-        } else if (formData.adminId.length < 4) {
-            newErrors.adminId = 'Admin ID must be at least 4 characters';
-        }
-
         // Email validation
         if (!formData.email.trim()) {
             newErrors.email = 'Email is required';
@@ -83,19 +75,52 @@ export default function AdminSignup() {
         }
 
         setIsLoading(true);
-
-        // Simulate API call (replace with actual API call)
-        setTimeout(() => {
-            // Here you would normally send data to your backend
-            console.log('Signup data:', formData);
+        try {
+            const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
+            // quick health check to give a clearer error when backend is down
+            try {
+                const ping = await fetch(`${API_BASE}/health`, { method: 'GET', mode: 'cors' });
+                if (!ping.ok) {
+                    throw new Error(`health check failed (${ping.status})`);
+                }
+            } catch (pingErr) {
+                setErrors({ form: `Cannot reach backend at ${API_BASE}: ${pingErr.message}. Ensure the server is running (server/) and MONGO_URI, JWT_SECRET are set.` });
+                setIsLoading(false);
+                console.error('Backend unreachable:', pingErr);
+                return;
+            }
+            const payload = {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                password: formData.password,
+                role: 'ADMIN',
+                fullName: `${formData.firstName} ${formData.lastName}`
+            };
+            const res = await fetch(`${API_BASE}/auth/register`, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                // show full server response for easier debugging
+                const serverMsg = data.message || data.error || JSON.stringify(data) || `Registration failed (${res.status})`;
+                setErrors({ form: serverMsg });
+                setIsLoading(false);
+                return;
+            }
+            // success
             setSuccess(true);
+            localStorage.setItem('token', data.token);
             setIsLoading(false);
-            
-            // Redirect to login after 2 seconds
-            setTimeout(() => {
-                navigate('/admin/login');
-            }, 2000);
-        }, 1500);
+            // keep user on success screen with a button to go to login
+        } catch (err) {
+            console.error('Admin signup error', err);
+            setErrors({ form: err.message || 'Network error' });
+            setIsLoading(false);
+        }
     };
 
     // Success screen
@@ -145,21 +170,35 @@ export default function AdminSignup() {
                         lineHeight: '1.6'
                     }}>
                         Your admin account has been created successfully.
-                        Redirecting to login page...
                     </p>
                     <div style={{
-                        background: '#f3f4f6',
-                        padding: '16px',
-                        borderRadius: '10px',
+                        display: 'flex',
+                        gap: 12,
+                        justifyContent: 'center',
                         marginTop: '24px'
                     }}>
-                        <p style={{
-                            color: '#4b5563',
-                            fontSize: '14px',
-                            margin: 0
+                        <div style={{
+                            background: '#f3f4f6',
+                            padding: '16px',
+                            borderRadius: '10px'
                         }}>
-                            <strong>Admin ID:</strong> {formData.adminId}
-                        </p>
+                            <p style={{
+                                color: '#4b5563',
+                                fontSize: '14px',
+                                margin: 0
+                            }}>
+                                <strong>Name:</strong> {formData.firstName} {formData.lastName}
+                            </p>
+                        </div>
+                        <button onClick={() => navigate('/admin/login')} style={{
+                            padding: '12px 18px',
+                            borderRadius: 10,
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            color: 'white',
+                            border: 'none',
+                            fontWeight: 600,
+                            cursor: 'pointer'
+                        }}>Go to Login</button>
                     </div>
                 </div>
             </div>
@@ -221,6 +260,26 @@ export default function AdminSignup() {
 
                 {/* Form Section */}
                 <form onSubmit={handleSubmit} style={{ padding: '40px 30px' }}>
+                    {errors.form && (
+                        <div style={{
+                            background: '#fee2e2',
+                            border: '1px solid #fca5a5',
+                            borderRadius: '10px',
+                            padding: '12px 16px',
+                            marginBottom: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px'
+                        }}>
+                            <AlertCircle size={20} color="#dc2626" />
+                            <p style={{
+                                color: '#dc2626',
+                                fontSize: '14px',
+                                margin: 0,
+                                fontWeight: '500'
+                            }}>{errors.form}</p>
+                        </div>
+                    )}
                     {/* First Name & Last Name Row */}
                     <div style={{ 
                         display: 'grid', 
@@ -325,68 +384,6 @@ export default function AdminSignup() {
                                 </p>
                             )}
                         </div>
-                    </div>
-
-                    {/* Admin ID Field */}
-                    <div style={{ marginBottom: '24px' }}>
-                        <label style={{
-                            display: 'block',
-                            color: '#374151',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            marginBottom: '8px'
-                        }}>
-                            Admin ID
-                        </label>
-                        <div style={{ position: 'relative' }}>
-                            <Hash
-                                size={20}
-                                color="#9ca3af"
-                                style={{
-                                    position: 'absolute',
-                                    left: '16px',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                    pointerEvents: 'none'
-                                }}
-                            />
-                            <input
-                                type="text"
-                                name="adminId"
-                                value={formData.adminId}
-                                onChange={handleChange}
-                                placeholder="Choose a unique admin ID"
-                                style={{
-                                    width: '100%',
-                                    padding: '14px 16px 14px 48px',
-                                    border: `2px solid ${errors.adminId ? '#ef4444' : '#e5e7eb'}`,
-                                    borderRadius: '10px',
-                                    fontSize: '15px',
-                                    transition: 'all 0.3s',
-                                    outline: 'none',
-                                    boxSizing: 'border-box'
-                                }}
-                                onFocus={(e) => {
-                                    if (!errors.adminId) {
-                                        e.target.style.borderColor = '#667eea';
-                                        e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
-                                    }
-                                }}
-                                onBlur={(e) => {
-                                    e.target.style.borderColor = errors.adminId ? '#ef4444' : '#e5e7eb';
-                                    e.target.style.boxShadow = 'none';
-                                }}
-                            />
-                        </div>
-                        {errors.adminId && (
-                            <p style={{
-                                color: '#ef4444',
-                                fontSize: '12px',
-                                margin: '6px 0 0 0'
-                            }}>
-                                {errors.adminId}
-                            </p>
-                        )}
                     </div>
 
                     {/* Email Field */}

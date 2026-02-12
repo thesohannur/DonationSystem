@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building, Lock, User, AlertCircle } from 'lucide-react';
 
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
+
 export default function NGOLogin() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        ngoId: '',
+        email: '',
         password: ''
     });
     const [error, setError] = useState('');
@@ -25,24 +27,32 @@ export default function NGOLogin() {
         setError('');
 
         // Validation
-        if (!formData.ngoId || !formData.password) {
+        if (!formData.email || !formData.password) {
             setError('Please fill in all fields');
             setIsLoading(false);
             return;
         }
 
-        // Simulate authentication (replace with actual API call)
-        setTimeout(() => {
-            // Demo credentials - replace with actual authentication
-            if (formData.ngoId === 'ngo' && formData.password === 'ngo123') {
-                // Store auth token or session
-                localStorage.setItem('ngoAuth', 'true');
-                navigate('/ngo/dashboard');
-            } else {
-                setError('Invalid NGO ID or Password');
+        try {
+            const res = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: formData.email, password: formData.password })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setError(data.message || `Login failed (${res.status})`);
+                setIsLoading(false);
+                return;
             }
+            localStorage.setItem('token', data.token);
+            navigate('/ngo/dashboard');
+        } catch (err) {
+            console.error('NGO login error', err);
+            setError(err.message || 'Network error');
+        } finally {
             setIsLoading(false);
-        }, 1000);
+        }
     };
 
     return (
@@ -126,14 +136,14 @@ export default function NGOLogin() {
                     {/* NGO ID Field */}
                     <div style={{ marginBottom: '24px' }}>
                         <label style={{
-                            display: 'block',
-                            color: '#374151',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            marginBottom: '8px'
-                        }}>
-                            NGO ID
-                        </label>
+                                display: 'block',
+                                color: '#374151',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                marginBottom: '8px'
+                            }}>
+                                Email
+                            </label>
                         <div style={{ position: 'relative' }}>
                             <User
                                 size={20}
@@ -146,11 +156,11 @@ export default function NGOLogin() {
                                 }}
                             />
                             <input
-                                type="text"
-                                name="ngoId"
-                                value={formData.ngoId}
+                                type="email"
+                                name="email"
+                                value={formData.email}
                                 onChange={handleChange}
-                                placeholder="Enter your NGO ID"
+                                placeholder="organization@example.com"
                                 style={{
                                     width: '100%',
                                     padding: '14px 16px 14px 48px',

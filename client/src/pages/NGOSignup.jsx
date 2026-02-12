@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building, Lock, User, Mail, AlertCircle, CheckCircle, Hash } from 'lucide-react';
+import { Building, Lock, User, Mail, AlertCircle, CheckCircle, Hash, Phone, MapPin, Globe, FileText, Tag } from 'lucide-react';
 
 export default function NGOSignup() {
     const navigate = useNavigate();
@@ -10,7 +10,12 @@ export default function NGOSignup() {
         ngoId: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        phoneNumber: '',
+        address: '',
+        website: '',
+        description: '',
+        focusAreas: ''
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -71,6 +76,13 @@ export default function NGOSignup() {
             newErrors.confirmPassword = 'Passwords do not match';
         }
 
+        // Phone Number validation
+        if (!formData.phoneNumber.trim()) {
+            newErrors.phoneNumber = 'Phone number is required';
+        } else if (!/^\d{11}$/.test(formData.phoneNumber.replace(/\D/g, ''))) {
+            newErrors.phoneNumber = 'Please enter a valid 11-digit phone number';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -83,19 +95,41 @@ export default function NGOSignup() {
         }
 
         setIsLoading(true);
-
-        // Simulate API call (replace with actual API call)
-        setTimeout(() => {
-            // Here you would normally send data to your backend
-            console.log('Signup data:', formData);
+        try {
+            const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
+            const payload = {
+                email: formData.email,
+                password: formData.password,
+                role: 'NGO',
+                organizationName: formData.organizationName,
+                contactPerson: formData.contactPerson,
+                registrationNumber: formData.ngoId,
+                phoneNumber: formData.phoneNumber,
+                address: formData.address,
+                website: formData.website,
+                description: formData.description,
+                focusAreas: formData.focusAreas ? formData.focusAreas.split(',').map(area => area.trim()).filter(area => area) : []
+            };
+            const res = await fetch(`${API_BASE}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setErrors({ form: data.message || `Registration failed (${res.status})` });
+                setIsLoading(false);
+                return;
+            }
             setSuccess(true);
+            localStorage.setItem('token', data.token);
             setIsLoading(false);
-            
-            // Redirect to login after 2 seconds
-            setTimeout(() => {
-                navigate('/ngo/login');
-            }, 2000);
-        }, 1500);
+            setTimeout(() => navigate('/ngo/login'), 1500);
+        } catch (err) {
+            console.error('NGO signup error', err);
+            setErrors({ form: err.message || 'Network error' });
+            setIsLoading(false);
+        }
     };
 
     // Success screen
@@ -221,6 +255,26 @@ export default function NGOSignup() {
 
                 {/* Form Section */}
                 <form onSubmit={handleSubmit} style={{ padding: '40px 30px' }}>
+                    {errors.form && (
+                        <div style={{
+                            background: '#fee2e2',
+                            border: '1px solid #fca5a5',
+                            borderRadius: '10px',
+                            padding: '12px 16px',
+                            marginBottom: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px'
+                        }}>
+                            <AlertCircle size={20} color="#dc2626" />
+                            <p style={{
+                                color: '#dc2626',
+                                fontSize: '14px',
+                                margin: 0,
+                                fontWeight: '500'
+                            }}>{errors.form}</p>
+                        </div>
+                    )}
                     {/* Organization Name Field */}
                     <div style={{ marginBottom: '24px' }}>
                         <label style={{
@@ -519,7 +573,7 @@ export default function NGOSignup() {
                     </div>
 
                     {/* Confirm Password Field */}
-                    <div style={{ marginBottom: '32px' }}>
+                    <div style={{ marginBottom: '24px' }}>
                         <label style={{
                             display: 'block',
                             color: '#374151',
@@ -576,6 +630,320 @@ export default function NGOSignup() {
                                 margin: '6px 0 0 0'
                             }}>
                                 {errors.confirmPassword}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Phone Number Field */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <label style={{
+                            display: 'block',
+                            color: '#374151',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            marginBottom: '8px'
+                        }}>
+                            Phone Number
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                            <Phone
+                                size={20}
+                                color="#9ca3af"
+                                style={{
+                                    position: 'absolute',
+                                    left: '16px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    pointerEvents: 'none'
+                                }}
+                            />
+                            <input
+                                type="tel"
+                                name="phoneNumber"
+                                value={formData.phoneNumber}
+                                onChange={handleChange}
+                                placeholder="11-digit phone number"
+                                style={{
+                                    width: '100%',
+                                    padding: '14px 16px 14px 48px',
+                                    border: `2px solid ${errors.phoneNumber ? '#ef4444' : '#e5e7eb'}`,
+                                    borderRadius: '10px',
+                                    fontSize: '15px',
+                                    transition: 'all 0.3s',
+                                    outline: 'none',
+                                    boxSizing: 'border-box'
+                                }}
+                                onFocus={(e) => {
+                                    if (!errors.phoneNumber) {
+                                        e.target.style.borderColor = '#667eea';
+                                        e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = errors.phoneNumber ? '#ef4444' : '#e5e7eb';
+                                    e.target.style.boxShadow = 'none';
+                                }}
+                            />
+                        </div>
+                        {errors.phoneNumber && (
+                            <p style={{
+                                color: '#ef4444',
+                                fontSize: '12px',
+                                margin: '6px 0 0 0'
+                            }}>
+                                {errors.phoneNumber}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Address Field */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <label style={{
+                            display: 'block',
+                            color: '#374151',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            marginBottom: '8px'
+                        }}>
+                            Address
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                            <MapPin
+                                size={20}
+                                color="#9ca3af"
+                                style={{
+                                    position: 'absolute',
+                                    left: '16px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    pointerEvents: 'none'
+                                }}
+                            />
+                            <input
+                                type="text"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleChange}
+                                placeholder="Street address, city, state"
+                                style={{
+                                    width: '100%',
+                                    padding: '14px 16px 14px 48px',
+                                    border: `2px solid ${errors.address ? '#ef4444' : '#e5e7eb'}`,
+                                    borderRadius: '10px',
+                                    fontSize: '15px',
+                                    transition: 'all 0.3s',
+                                    outline: 'none',
+                                    boxSizing: 'border-box'
+                                }}
+                                onFocus={(e) => {
+                                    if (!errors.address) {
+                                        e.target.style.borderColor = '#667eea';
+                                        e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = errors.address ? '#ef4444' : '#e5e7eb';
+                                    e.target.style.boxShadow = 'none';
+                                }}
+                            />
+                        </div>
+                        {errors.address && (
+                            <p style={{
+                                color: '#ef4444',
+                                fontSize: '12px',
+                                margin: '6px 0 0 0'
+                            }}>
+                                {errors.address}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Website Field */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <label style={{
+                            display: 'block',
+                            color: '#374151',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            marginBottom: '8px'
+                        }}>
+                            Website
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                            <Globe
+                                size={20}
+                                color="#9ca3af"
+                                style={{
+                                    position: 'absolute',
+                                    left: '16px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    pointerEvents: 'none'
+                                }}
+                            />
+                            <input
+                                type="url"
+                                name="website"
+                                value={formData.website}
+                                onChange={handleChange}
+                                placeholder="https://example.com"
+                                style={{
+                                    width: '100%',
+                                    padding: '14px 16px 14px 48px',
+                                    border: `2px solid ${errors.website ? '#ef4444' : '#e5e7eb'}`,
+                                    borderRadius: '10px',
+                                    fontSize: '15px',
+                                    transition: 'all 0.3s',
+                                    outline: 'none',
+                                    boxSizing: 'border-box'
+                                }}
+                                onFocus={(e) => {
+                                    if (!errors.website) {
+                                        e.target.style.borderColor = '#667eea';
+                                        e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = errors.website ? '#ef4444' : '#e5e7eb';
+                                    e.target.style.boxShadow = 'none';
+                                }}
+                            />
+                        </div>
+                        {errors.website && (
+                            <p style={{
+                                color: '#ef4444',
+                                fontSize: '12px',
+                                margin: '6px 0 0 0'
+                            }}>
+                                {errors.website}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Description Field */}
+                    <div style={{ marginBottom: '32px' }}>
+                        <label style={{
+                            display: 'block',
+                            color: '#374151',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            marginBottom: '8px'
+                        }}>
+                            Description
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                            <FileText
+                                size={20}
+                                color="#9ca3af"
+                                style={{
+                                    position: 'absolute',
+                                    left: '16px',
+                                    top: '16px',
+                                    pointerEvents: 'none'
+                                }}
+                            />
+                            <textarea
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                placeholder="Tell us about your organization and mission"
+                                style={{
+                                    width: '100%',
+                                    padding: '14px 16px 14px 48px',
+                                    border: `2px solid ${errors.description ? '#ef4444' : '#e5e7eb'}`,
+                                    borderRadius: '10px',
+                                    fontSize: '15px',
+                                    transition: 'all 0.3s',
+                                    outline: 'none',
+                                    boxSizing: 'border-box',
+                                    fontFamily: 'inherit',
+                                    minHeight: '100px',
+                                    resize: 'vertical'
+                                }}
+                                onFocus={(e) => {
+                                    if (!errors.description) {
+                                        e.target.style.borderColor = '#667eea';
+                                        e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = errors.description ? '#ef4444' : '#e5e7eb';
+                                    e.target.style.boxShadow = 'none';
+                                }}
+                            />
+                        </div>
+                        {errors.description && (
+                            <p style={{
+                                color: '#ef4444',
+                                fontSize: '12px',
+                                margin: '6px 0 0 0'
+                            }}>
+                                {errors.description}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Focus Areas Field */}
+                    <div style={{ marginBottom: '32px' }}>
+                        <label style={{
+                            display: 'block',
+                            color: '#374151',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            marginBottom: '8px'
+                        }}>
+                            Focus Areas
+                            <span style={{ color: '#9ca3af', fontSize: '12px', fontWeight: '400', marginLeft: '4px' }}>
+                                (comma-separated)
+                            </span>
+                        </label>
+                        <div style={{ position: 'relative' }}>
+                            <Tag
+                                size={20}
+                                color="#9ca3af"
+                                style={{
+                                    position: 'absolute',
+                                    left: '16px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    pointerEvents: 'none'
+                                }}
+                            />
+                            <input
+                                type="text"
+                                name="focusAreas"
+                                value={formData.focusAreas}
+                                onChange={handleChange}
+                                placeholder="e.g., Education, Healthcare, Poverty Relief"
+                                style={{
+                                    width: '100%',
+                                    padding: '14px 16px 14px 48px',
+                                    border: `2px solid ${errors.focusAreas ? '#ef4444' : '#e5e7eb'}`,
+                                    borderRadius: '10px',
+                                    fontSize: '15px',
+                                    transition: 'all 0.3s',
+                                    outline: 'none',
+                                    boxSizing: 'border-box'
+                                }}
+                                onFocus={(e) => {
+                                    if (!errors.focusAreas) {
+                                        e.target.style.borderColor = '#667eea';
+                                        e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = errors.focusAreas ? '#ef4444' : '#e5e7eb';
+                                    e.target.style.boxShadow = 'none';
+                                }}
+                            />
+                        </div>
+                        {errors.focusAreas && (
+                            <p style={{
+                                color: '#ef4444',
+                                fontSize: '12px',
+                                margin: '6px 0 0 0'
+                            }}>
+                                {errors.focusAreas}
                             </p>
                         )}
                     </div>
