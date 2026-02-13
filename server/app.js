@@ -11,7 +11,12 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3002", 
+  methods: ["GET", "POST", "PATCH", "DELETE", "PUT"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 
 // Request logger (middleware)
