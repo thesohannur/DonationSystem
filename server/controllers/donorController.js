@@ -1,5 +1,6 @@
 const Donor = require("../models/Donor");
 const User = require("../models/User");
+const Payment = require("../models/Payment");
 
 // @desc    Get all donors
 // @route   GET /api/donors
@@ -201,6 +202,7 @@ const getMyDonations = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 module.exports = {
   getAllDonors,

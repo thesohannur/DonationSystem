@@ -37,10 +37,6 @@
   font-size: 0.9rem;
 }
 
-.notice-icon {
-  font-size: 1.2rem;
-}
-
 /* Stats Grid */
 .stats-grid {
   display: grid;
@@ -85,8 +81,15 @@
 }
 
 .stat-icon {
-  font-size: 2.5rem;
+  stroke-width: 1.8;
+  color: inherit;
 }
+
+.notice-icon {
+  font-size: 1.2rem;
+  stroke-width: 2;
+}
+
 
 .stat-content h3 {
   font-size: 0.9rem;
