@@ -16,7 +16,7 @@ const CTASection = () => {
             className="btn btn-large btn-primary"
             onClick={() => navigate('/auth/register')}
           >
-            Register Now
+            Get Started
           </button>
           <button 
             className="btn btn-large btn-secondary"
