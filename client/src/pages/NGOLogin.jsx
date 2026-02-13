@@ -45,6 +45,24 @@ export default function NGOLogin() {
                 setIsLoading(false);
                 return;
             }
+
+            // Decode JWT payload to verify role (no library needed — JWT is base64)
+            let tokenRole = null;
+            try {
+                const payload = JSON.parse(atob(data.token.split('.')[1]));
+                tokenRole = (payload.role || payload.Role || '').toUpperCase();
+            } catch {
+                setError('Invalid token received from server.');
+                setIsLoading(false);
+                return;
+            }
+
+            if (tokenRole !== 'NGO') {
+                setError('Access denied. This login is for NGO accounts only. Please use the correct login page for your role.');
+                setIsLoading(false);
+                return;
+            }
+
             localStorage.setItem('token', data.token);
             navigate('/ngo/dashboard');
         } catch (err) {

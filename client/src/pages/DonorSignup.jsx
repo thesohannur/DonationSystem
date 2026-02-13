@@ -87,6 +87,26 @@ export default function DonorSignup() {
         setIsLoading(true);
         try {
             const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
+
+            // Check if this email is already registered under a DIFFERENT role
+            try {
+                const checkRes = await fetch(`${API_BASE}/auth/check-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: formData.email })
+                });
+                if (checkRes.ok) {
+                    const checkData = await checkRes.json();
+                    if (checkData.exists && checkData.role && checkData.role.toUpperCase() !== 'DONOR') {
+                        setErrors({ form: `This email is already registered as a ${checkData.role} account. Each email can only be used for one role.` });
+                        setIsLoading(false);
+                        return;
+                    }
+                }
+            } catch {
+                // If check endpoint doesn't exist, proceed — server will catch duplicate on register
+            }
+
             const payload = {
                 email: formData.email,
                 password: formData.password,
@@ -104,7 +124,11 @@ export default function DonorSignup() {
             });
             const data = await res.json();
             if (!res.ok) {
-                setErrors({ form: data.message || `Registration failed (${res.status})` });
+                const serverMsg = data.message || `Registration failed (${res.status})`;
+                const friendlyMsg = serverMsg.toLowerCase().includes('already') || serverMsg.toLowerCase().includes('exist')
+                    ? `${serverMsg} — Each email address can only be registered under one role.`
+                    : serverMsg;
+                setErrors({ form: friendlyMsg });
                 setIsLoading(false);
                 return;
             }

@@ -89,6 +89,26 @@ export default function AdminSignup() {
                 console.error('Backend unreachable:', pingErr);
                 return;
             }
+            // Check if this email is already registered under a DIFFERENT role
+            try {
+                const checkRes = await fetch(`${API_BASE}/auth/check-email`, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: formData.email })
+                });
+                if (checkRes.ok) {
+                    const checkData = await checkRes.json();
+                    if (checkData.exists && checkData.role && checkData.role.toUpperCase() !== 'ADMIN') {
+                        setErrors({ form: `This email is already registered as a ${checkData.role} account. Each email can only be used for one role.` });
+                        setIsLoading(false);
+                        return;
+                    }
+                }
+            } catch {
+                // If check endpoint doesn't exist, proceed — server will catch duplicate on register
+            }
+
             const payload = {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
@@ -107,7 +127,11 @@ export default function AdminSignup() {
             if (!res.ok) {
                 // show full server response for easier debugging
                 const serverMsg = data.message || data.error || JSON.stringify(data) || `Registration failed (${res.status})`;
-                setErrors({ form: serverMsg });
+                // Surface role-conflict errors from server clearly
+                const friendlyMsg = serverMsg.toLowerCase().includes('already') || serverMsg.toLowerCase().includes('exist')
+                    ? `${serverMsg} — Each email address can only be registered under one role.`
+                    : serverMsg;
+                setErrors({ form: friendlyMsg });
                 setIsLoading(false);
                 return;
             }
