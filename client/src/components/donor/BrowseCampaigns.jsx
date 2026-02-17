@@ -39,19 +39,16 @@ const BrowseCampaigns = () => {
   const applyFilters = () => {
     let filtered = [...campaigns];
 
-    // Filter by money acceptance
     if (filters.acceptsMoney !== '') {
       const acceptsMoney = filters.acceptsMoney === 'true';
       filtered = filtered.filter(c => c.acceptsMoney === acceptsMoney);
     }
 
-    // Filter by time acceptance
     if (filters.acceptsTime !== '') {
       const acceptsTime = filters.acceptsTime === 'true';
       filtered = filtered.filter(c => c.acceptsTime === acceptsTime);
     }
 
-    // Sort
     switch (filters.sortBy) {
       case 'expiring_soon':
         filtered.sort((a, b) => new Date(a.expirationTime) - new Date(b.expirationTime));
@@ -156,7 +153,7 @@ const BrowseCampaigns = () => {
         </div>
       </div>
 
-      {/* Campaigns Grid */}
+      {/* Campaigns Grid */} {/* Dummy not tested */}
       {filteredCampaigns.length > 0 ? (
         <div className="campaigns-grid">
           {filteredCampaigns.map((campaign) => (

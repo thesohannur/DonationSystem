@@ -67,10 +67,8 @@ const DonorProfile = () => {
       setSuccess('Profile updated successfully!');
       setEditing(false);
       
-      // Refresh profile data
       await fetchProfile();
       
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
       
     } catch (err) {

@@ -122,7 +122,7 @@ const DonationHistory = () => {
       {/* Donations Table/List */}
       {filteredDonations.length > 0 ? (
         <>
-          {/* Desktop Table View */}
+          {/* Desktop Table View */} {/* Dummy not tested */}
           <div className="table-container desktop-view">
             <table className="donations-table">
               <thead>
@@ -157,7 +157,6 @@ const DonationHistory = () => {
             </table>
           </div>
 
-          {/* Mobile Card View */}
           <div className="donations-cards mobile-view">
             {filteredDonations.map((donation) => (
               <div key={donation._id} className="donation-card">
