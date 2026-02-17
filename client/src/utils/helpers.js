@@ -1,8 +1,8 @@
 // Format currency
 export const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('en-IN', {
+  return new Intl.NumberFormat('bn-BD', {
     style: 'currency',
-    currency: 'INR',
+    currency: 'BDT',
     maximumFractionDigits: 0,
   }).format(amount);
 };
