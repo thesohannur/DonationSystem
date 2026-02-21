@@ -354,8 +354,8 @@ export default function DonorLogin() {
                         margin: 0,
                         lineHeight: '1.6'
                     }}>
-                        Donor ID: <strong>donor</strong><br />
-                        Password: <strong>donor123</strong>
+                        Donor Email: <strong>sohannur2002@gmail.com</strong><br />
+                        Password: <strong>sohannur2002</strong>
                     </p>
                 </div>
             </div>

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Payment = require("../models/Payment");
 const Donor = require("../models/Donor");
 const NGO = require("../models/NGO");
@@ -134,7 +135,7 @@ const deletePayment = async (req, res) => {
 };
 
 // @desc    Create a donation
-// @route   POST /api/payments/donate
+// @route   POST /api/payments
 // @access  Private (Donor)
 const createDonation = async (req, res) => {
   const session = await mongoose.startSession();

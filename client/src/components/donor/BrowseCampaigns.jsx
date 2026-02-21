@@ -9,8 +9,8 @@ const BrowseCampaigns = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filters, setFilters] = useState({
-    acceptsMoney: '',
-    acceptsTime: '',
+    donationType: 'all', // 'all' | 'money' | 'time'
+    hideExpired: true,
     sortBy: 'recent',
   });
 
@@ -39,14 +39,15 @@ const BrowseCampaigns = () => {
   const applyFilters = () => {
     let filtered = [...campaigns];
 
-    if (filters.acceptsMoney !== '') {
-      const acceptsMoney = filters.acceptsMoney === 'true';
-      filtered = filtered.filter(c => c.acceptsMoney === acceptsMoney);
+    if (filters.donationType === 'money') {
+      filtered = filtered.filter(c => c.acceptsMoney === true);
+    } else if (filters.donationType === 'time') {
+      filtered = filtered.filter(c => c.acceptsTime === true);
     }
 
-    if (filters.acceptsTime !== '') {
-      const acceptsTime = filters.acceptsTime === 'true';
-      filtered = filtered.filter(c => c.acceptsTime === acceptsTime);
+    if (filters.hideExpired) {
+      const now = new Date();
+      filtered = filtered.filter(c => new Date(c.expirationTime) > now);
     }
 
     switch (filters.sortBy) {
@@ -73,8 +74,8 @@ const BrowseCampaigns = () => {
 
   const clearFilters = () => {
     setFilters({
-      acceptsMoney: '',
-      acceptsTime: '',
+      donationType: 'all',
+      hideExpired: true,
       sortBy: 'recent',
     });
   };
@@ -104,40 +105,46 @@ const BrowseCampaigns = () => {
         </div>
         <div className="campaigns-count">
           <span className="count-number">{filteredCampaigns.length}</span>
-          <span className="count-label">Active Campaigns</span>
+          <span className="count-label">Displayed Campaigns</span>
         </div>
       </div>
 
       {/* Filters */}
       <div className="filters-section">
-        <div className="filters-group">
-          <div className="filter-item">
-            <label>Accepts Money:</label>
-            <select
-              value={filters.acceptsMoney}
-              onChange={(e) => handleFilterChange('acceptsMoney', e.target.value)}
-            >
-              <option value="">All</option>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+        <div className="filters-top-row">
+          <span className="filters-title">Filters</span>
+          <button className="clear-filters-btn" onClick={clearFilters}>
+            ↺ Reset
+          </button>
+        </div>
+
+        <div className="filters-body">
+          {/* Donation Type Pill Selector */}
+          <div className="filter-block">
+            <span className="filter-block-label">Donation Type</span>
+            <div className="pill-group">
+              {[
+                { value: 'all', icon: '✦', text: 'All' },
+                { value: 'money', icon: '💰', text: 'Money' },
+                { value: 'time', icon: '⏱', text: 'Time' },
+              ].map(({ value, icon, text }) => (
+                <button
+                  key={value}
+                  className={`pill-btn${filters.donationType === value ? ' pill-btn--active' : ''}`}
+                  onClick={() => handleFilterChange('donationType', value)}
+                >
+                  <span className="pill-icon">{icon}</span>
+                  {text}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="filter-item">
-            <label>Accepts Time:</label>
+          {/* Sort By */}
+          <div className="filter-block">
+            <span className="filter-block-label">Sort By</span>
             <select
-              value={filters.acceptsTime}
-              onChange={(e) => handleFilterChange('acceptsTime', e.target.value)}
-            >
-              <option value="">All</option>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
-          </div>
-
-          <div className="filter-item">
-            <label>Sort By:</label>
-            <select
+              className="filter-select"
               value={filters.sortBy}
               onChange={(e) => handleFilterChange('sortBy', e.target.value)}
             >
@@ -147,9 +154,20 @@ const BrowseCampaigns = () => {
             </select>
           </div>
 
-          <button className="clear-filters-btn" onClick={clearFilters}>
-            Clear Filters
-          </button>
+          {/* Hide Expired Toggle */}
+          <div className="filter-block filter-block--toggle">
+            <span className="filter-block-label">Hide Expired</span>
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={filters.hideExpired}
+                onChange={(e) => handleFilterChange('hideExpired', e.target.checked)}
+              />
+              <span className="toggle-track">
+                <span className="toggle-thumb"></span>
+              </span>
+            </label>
+          </div>
         </div>
       </div>
 

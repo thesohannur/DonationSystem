@@ -58,6 +58,64 @@
   color: #43e97b;
 }
 
+.stat-value.time-stat {
+  color: #89f7fe;
+}
+
+/* Type Tabs */
+.type-tabs {
+  display: flex;
+  gap: 0;
+  background: #f1f3f5;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 1.5rem;
+  width: fit-content;
+}
+
+.type-tab {
+  padding: 0.55rem 1.4rem;
+  border: none;
+  background: transparent;
+  border-radius: 9px;
+  font-size: 0.93rem;
+  font-weight: 600;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.type-tab:hover:not(.active) {
+  color: #495057;
+  background: rgba(255,255,255,0.6);
+}
+
+.type-tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35);
+}
+
+/* Type Badges */
+.type-badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.type-badge--money {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.type-badge--time {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
 /* Filters */
 .history-filters {
   display: flex;
@@ -191,10 +249,49 @@
   color: #721c24;
 }
 
+.status-approved {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+.status-rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status-completed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
 .transaction-id {
   font-family: 'Courier New', monospace;
   font-size: 0.85rem;
   color: #6c757d;
+}
+
+.hours-cell {
+  font-weight: 700;
+  color: #0c5460;
+  font-size: 1rem;
+}
+
+.campaign-cell {
+  font-size: 0.88rem;
+  color: #495057;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message-cell {
+  font-size: 0.85rem;
+  color: #6c757d;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Mobile Card View */
@@ -224,6 +321,13 @@
   border-bottom: 1px solid #e9ecef;
 }
 
+.card-header-left {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .card-date {
   font-size: 0.85rem;
   color: #6c757d;
@@ -250,6 +354,30 @@
   font-weight: 700;
   color: #28a745;
   margin-top: 0.5rem;
+}
+
+.card-hours {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0c5460;
+  margin-top: 0.5rem;
+}
+
+.card-campaign {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-weight: 400;
+  margin-top: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.card-message {
+  font-size: 0.85rem;
+  color: #495057;
+  font-style: italic;
 }
 
 .card-footer {

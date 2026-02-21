@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { donorService } from '../../services/donorService';
-import { formatCurrency, formatDate } from '../../utils/helpers';
+import { formatCurrency, formatDate, formatDateTime } from '../../utils/helpers';
 import './DonorDashboard.css';
-import { BarChart3, Calendar, Gift, HeartHandshake, Hourglass, Search, Target, User, Wallet } from "lucide-react";
+import { BarChart3, Calendar, Clock, Gift, HeartHandshake, Hourglass, Search, Target, User, Wallet } from 'lucide-react';
 
 const DonorDashboard = () => {
   const [profile, setProfile] = useState(null);
@@ -13,126 +13,124 @@ const DonorDashboard = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+  useEffect(() => { fetchDashboardData(); }, []);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       setError('');
 
-      // Fetch profile
-      let profileRes, statsRes, donationsRes;
+      const [profileRes, statsRes, donationsRes] = await Promise.allSettled([
+        donorService.getMyProfile(),
+        donorService.getMyStats(),
+        donorService.getMyDonations(),
+      ]);
 
-      try {
-        console.log('Fetching profile...');
-        profileRes = await donorService.getMyProfile();
-        console.log('Profile loaded:', profileRes);
-      } catch (err) {
-        console.error('Profile error:', err.response?.data || err.message);
-        throw new Error('Failed to load profile: ' + (err.response?.data?.message || err.message));
-      }
+      if (profileRes.status === 'rejected') throw new Error('Failed to load profile');
 
-      try {
-        console.log('Fetching stats...');
-        statsRes = await donorService.getMyStats();
-        console.log('Stats loaded:', statsRes);
-      } catch (err) {
-        console.error('Stats error:', err.response?.data || err.message);
-        statsRes = {
-          data: {
-            totalDonated: 0,
-            donationCount: 0,
-            campaignsSupported: 0,
-            registrationDate: profileRes.data.registrationDate,
-            approved: profileRes.data.approved
-          }
-        };
-      }
-
-      try {
-        console.log('Fetching donations...');
-        donationsRes = await donorService.getMyDonations();
-        console.log('Donations loaded:', donationsRes);
-      } catch (err) {
-        console.error('Donations error:', err.response?.data || err.message);
-        donationsRes = { data: [] };
-      }
-
-      setProfile(profileRes.data);
-      setStats(statsRes.data);
-      setRecentDonations(donationsRes.data.slice(0, 5));
-
+      setProfile(profileRes.value.data);
+      setStats(statsRes.status === 'fulfilled' ? statsRes.value.data : {
+        totalDonated: 0, donationCount: 0, campaignsSupported: 0,
+        volunteerCount: 0, totalHoursCommitted: 0,
+        registrationDate: profileRes.value.data.registrationDate,
+        approved: profileRes.value.data.approved,
+      });
+      setRecentDonations(
+        donationsRes.status === 'fulfilled' ? donationsRes.value.data.slice(0, 5) : []
+      );
     } catch (err) {
       setError(err.message || 'Failed to load dashboard data');
-      console.error('Dashboard error:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="dashboard-container">
-        <div className="loading-spinner">Loading...</div>
+  if (loading) return (
+    <div className="dashboard-container">
+      <div className="loading-spinner">
+        <div className="spinner-ring" />
+        Loading your dashboard...
       </div>
-    );
-  }
+    </div>
+  );
 
-  if (error) {
-    return (
-      <div className="dashboard-container">
-        <div className="error-message">{error}</div>
-      </div>
-    );
-  }
+  if (error) return (
+    <div className="dashboard-container">
+      <div className="error-message">{error}</div>
+    </div>
+  );
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header">
-        <div className="welcome-section">
-          <h1>Welcome back, {profile?.firstName}!</h1>
-          <p className="subtitle">Thank you for making a difference</p>
+
+      {/* â”€â”€ Hero Banner â”€â”€ */}
+      <div className="dashboard-hero">
+        <div className="hero-bg-shapes">
+          <div className="shape shape-1" />
+          <div className="shape shape-2" />
+          <div className="shape shape-3" />
         </div>
-        {!stats?.approved && (
-          <div className="approval-notice">
-            <Hourglass className="notice-icon" />
-            <span>Your account is pending approval</span>
+        <div className="hero-content">
+          <div>
+            <p className="hero-greeting">Welcome back</p>
+            <h1 className="hero-name">{profile?.firstName} {profile?.lastName}</h1>
+            <p className="hero-sub">Thank you for making a difference</p>
           </div>
-        )}
+          {!stats?.approved && (
+            <div className="approval-notice">
+              <Hourglass size={16} />
+              <span>Account pending approval</span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* â”€â”€ Stats Grid â”€â”€ */}
       <div className="stats-grid">
         <div className="stat-card stat-card-primary">
-          <Wallet className="stat-icon" size={40} />
+          <div className="stat-card-glow" />
+          <div className="stat-card-icon-wrap"><Wallet size={26} /></div>
           <div className="stat-content">
-            <h3>Total Donated</h3>
+            <p className="stat-label">Total Donated</p>
             <p className="stat-value">{formatCurrency(stats?.totalDonated || 0)}</p>
           </div>
         </div>
 
         <div className="stat-card stat-card-secondary">
-          <Target className="stat-icon" size={40} />
+          <div className="stat-card-glow" />
+          <div className="stat-card-icon-wrap"><Target size={26} /></div>
           <div className="stat-content">
-            <h3>Campaigns Supported</h3>
+            <p className="stat-label">Campaigns</p>
             <p className="stat-value">{stats?.campaignsSupported || 0}</p>
           </div>
         </div>
 
         <div className="stat-card stat-card-tertiary">
-          <HeartHandshake className="stat-icon" size={40} />
+          <div className="stat-card-glow" />
+          <div className="stat-card-icon-wrap"><HeartHandshake size={26} /></div>
           <div className="stat-content">
-            <h3>Total Donations</h3>
+            <p className="stat-label">Donations</p>
             <p className="stat-value">{stats?.donationCount || 0}</p>
           </div>
         </div>
 
-        <div className="stat-card stat-card-info">
-          <Calendar className="stat-icon" size={40} />
+        <div className="stat-card stat-card-time">
+          <div className="stat-card-glow" />
+          <div className="stat-card-icon-wrap"><Clock size={26} /></div>
           <div className="stat-content">
-            <h3>Member Since</h3>
+            <p className="stat-label">Hours Volunteered</p>
+            <p className="stat-value">
+              {stats?.totalHoursCommitted || 0}
+              <span className="stat-unit"> hrs</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="stat-card stat-card-info">
+          <div className="stat-card-glow" />
+          <div className="stat-card-icon-wrap"><Calendar size={26} /></div>
+          <div className="stat-content">
+            <p className="stat-label">Member Since</p>
             <p className="stat-value-date">
               {stats?.registrationDate ? formatDate(stats.registrationDate) : 'N/A'}
             </p>
@@ -140,77 +138,73 @@ const DonorDashboard = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
+      {/* â”€â”€ Quick Actions â”€â”€ */}
       <div className="quick-actions-section">
-        <h2>Quick Actions</h2>
+        <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions-grid">
-          <button
-            className="action-btn action-btn-primary"
-            onClick={() => navigate('/donor/campaigns')}
-          >
-            <Search className="action-icon" size={18} />
-            <span>Browse Campaigns</span>
+          <button className="action-btn action-btn-primary" onClick={() => navigate('/donor/campaigns')}>
+            <div className="action-btn-icon"><Search size={20} /></div>
+            <div className="action-btn-text">
+              <span className="action-title">Browse Campaigns</span>
+              <span className="action-sub">Find causes to support</span>
+            </div>
           </button>
-          <button
-            className="action-btn action-btn-secondary"
-            onClick={() => navigate('/donor/donations')}
-          >
-            <BarChart3 className="action-icon icon-purple" size={20} />
-            <span>View History</span>
+          <button className="action-btn action-btn-secondary" onClick={() => navigate('/donor/donations')}>
+            <div className="action-btn-icon"><BarChart3 size={20} /></div>
+            <div className="action-btn-text">
+              <span className="action-title">View History</span>
+              <span className="action-sub">Money & time contributions</span>
+            </div>
           </button>
-          <button
-            className="action-btn action-btn-tertiary"
-            onClick={() => navigate('/donor/profile')}
-          >
-            <User className="action-icon" size={18} />
-            <span>Update Profile</span>
+          <button className="action-btn action-btn-tertiary" onClick={() => navigate('/donor/profile')}>
+            <div className="action-btn-icon"><User size={20} /></div>
+            <div className="action-btn-text">
+              <span className="action-title">My Profile</span>
+              <span className="action-sub">Update your information</span>
+            </div>
           </button>
         </div>
       </div>
 
-      {/* Recent Donations */}
-      {recentDonations.length > 0 && (
-        <div className="recent-donations-section">
+      {/* â”€â”€ Recent Activity â”€â”€ */}
+      {recentDonations.length > 0 ? (
+        <div className="recent-section">
           <div className="section-header">
-            <h2>Recent Donations</h2>
-            <button
-              className="view-all-btn"
-              onClick={() => navigate('/donor/donations')}
-            >
-              View All
-            </button>
+            <h2 className="section-title" style={{ margin: 0 }}>Recent Activity</h2>
+            <button className="view-all-btn" onClick={() => navigate('/donor/donations')}>View All</button>
           </div>
-          <div className="donations-list">
-            {recentDonations.map((donation) => (
-              <div key={donation._id} className="donation-item">
-                <div className="donation-info">
-                  <h4>{donation.ngoId?.name || 'NGO Name'}</h4>
-                  <p className="donation-date">{formatDate(donation.timestamp)}</p>
+          <div className="activity-list">
+            {recentDonations.map((item) => (
+              <div key={item._id} className="activity-item">
+                <div className={`activity-type-dot activity-type-dot--${item.type || 'money'}`}>
+                  {item.type === 'time' ? <Clock size={14} /> : <Wallet size={14} />}
                 </div>
-                <div className="donation-amount">
-                  <span className="amount-value">{formatCurrency(donation.amount)}</span>
-                  <span className={`status-badge status-${donation.status.toLowerCase()}`}>
-                    {donation.status}
+                <div className="activity-info">
+                  <p className="activity-ngo">
+                    {item.ngoId?.organizationName || item.ngoId?.name || 'NGO'}
+                  </p>
+                  <p className="activity-date">{formatDateTime(item.timestamp)}</p>
+                </div>
+                <div className="activity-right">
+                  <span className="activity-value">
+                    {item.type === 'time'
+                      ? `${item.hoursCommitted} hr${item.hoursCommitted !== 1 ? 's' : ''}`
+                      : formatCurrency(item.amount)}
+                  </span>
+                  <span className={`status-badge activity-status status-${item.status?.toLowerCase()}`}>
+                    {item.status}
                   </span>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      )}
-
-      {/* Empty State */}
-      {recentDonations.length === 0 && stats?.donationCount === 0 && (
+      ) : (
         <div className="empty-state">
-          <div className="empty-state-icon">
-            <Gift size={50} />
-          </div>
-          <h3>No donations yet</h3>
-          <p>Start making a difference today by donating to a campaign</p>
-          <button
-            className="empty-state-btn"
-            onClick={() => navigate('/donor/campaigns')}
-          >
+          <div className="empty-state-icon"><Gift size={50} /></div>
+          <h3>No contributions yet</h3>
+          <p>Start making a difference today</p>
+          <button className="empty-state-btn" onClick={() => navigate('/donor/campaigns')}>
             Browse Campaigns
           </button>
         </div>

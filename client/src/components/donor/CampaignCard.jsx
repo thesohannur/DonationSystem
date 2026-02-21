@@ -6,9 +6,17 @@ import './CampaignCard.css';
 const CampaignCard = ({ campaign }) => {
   const navigate = useNavigate();
   const daysRemaining = getDaysRemaining(campaign.expirationTime);
+  const acceptsBoth = campaign.acceptsMoney && campaign.acceptsTime;
 
   const handleDonate = () => {
     navigate(`/donor/donate/${campaign._id}`);
+  };
+
+  const buttonLabel = () => {
+    if (daysRemaining === 0) return 'Campaign Ended';
+    if (acceptsBoth) return 'Donate / Volunteer';
+    if (campaign.acceptsTime) return 'Volunteer Now';
+    return 'Donate Now';
   };
 
   return (
@@ -19,7 +27,7 @@ const CampaignCard = ({ campaign }) => {
             <span className="badge badge-money">💰 Money</span>
           )}
           {campaign.acceptsTime && (
-            <span className="badge badge-time">⏰ Time</span>
+            <span className="badge badge-time">⏱ Time</span>
           )}
         </div>
         <div className="campaign-urgency">
@@ -31,7 +39,7 @@ const CampaignCard = ({ campaign }) => {
 
       <div className="campaign-card-body">
         <h3 className="campaign-title">{campaign.description}</h3>
-        
+
         <div className="campaign-meta">
           <div className="meta-item">
             <span className="meta-label">NGO:</span>
@@ -45,27 +53,34 @@ const CampaignCard = ({ campaign }) => {
           </div>
         </div>
 
-        <div className="campaign-progress">
-          <div className="progress-header">
-            <span className="progress-label">Amount Raised</span>
-            <span className="progress-amount">{formatCurrency(campaign.amount)}</span>
+        {campaign.acceptsMoney ? (
+          <div className="campaign-progress">
+            <div className="progress-header">
+              <span className="progress-label">Amount Raised</span>
+              <span className="progress-amount">{formatCurrency(campaign.amount)}</span>
+            </div>
+            <div className="progress-bar-container">
+              <div
+                className="progress-bar-fill"
+                style={{ width: `${Math.min((campaign.amount / 100000) * 100, 100)}%` }}
+              />
+            </div>
           </div>
-          <div className="progress-bar-container">
-            <div 
-              className="progress-bar-fill"
-              style={{ width: `${Math.min((campaign.amount / 100000) * 100, 100)}%` }}
-            />
+        ) : (
+          <div className="campaign-volunteer-info">
+            <span className="volunteer-info-icon">🤝</span>
+            <span className="volunteer-info-text">Volunteers Welcome</span>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="campaign-card-footer">
-        <button 
-          className="donate-btn"
+        <button
+          className={`donate-btn${campaign.acceptsTime && !campaign.acceptsMoney ? ' donate-btn--time' : ''}`}
           onClick={handleDonate}
           disabled={daysRemaining === 0}
         >
-          {daysRemaining > 0 ? 'Donate Now' : 'Campaign Ended'}
+          {buttonLabel()}
         </button>
       </div>
     </div>

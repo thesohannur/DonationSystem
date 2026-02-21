@@ -354,8 +354,8 @@ export default function NGOLogin() {
                         margin: 0,
                         lineHeight: '1.6'
                     }}>
-                        NGO ID: <strong>ngo</strong><br />
-                        Password: <strong>ngo123</strong>
+                        NGO ID: <strong></strong><br />
+                        Password: <strong></strong>
                     </p>
                 </div>
             </div>
