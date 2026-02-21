@@ -154,3 +154,33 @@
   background-color: #ccc;
   cursor: not-allowed;
 }
+
+.donate-btn--time {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.donate-btn--time:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0e8a7e 0%, #30d470 100%);
+}
+
+/* Volunteer info (shown instead of progress bar for time-only campaigns) */
+.campaign-volunteer-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(135deg, #e0fff8 0%, #e8f5e9 100%);
+  border-radius: 8px;
+  border: 1px solid #b2dfdb;
+}
+
+.volunteer-info-icon {
+  font-size: 1.1rem;
+}
+
+.volunteer-info-text {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #00796b;
+}

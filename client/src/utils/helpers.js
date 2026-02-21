@@ -48,6 +48,9 @@ export const getStatusClass = (status) => {
     SUCCESS: 'status-success',
     PENDING: 'status-pending',
     FAILED: 'status-failed',
+    APPROVED: 'status-approved',
+    REJECTED: 'status-rejected',
+    COMPLETED: 'status-completed',
   };
   return statusMap[status] || 'status-default';
 };

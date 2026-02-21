@@ -27,7 +27,7 @@ export const donorService = {
 
   // Get active campaigns
   getActiveCampaigns: async () => {
-    const response = await api.get('/campaigns/active');
+    const response = await api.get('/campaigns?approved=true');
     return response.data;
   },
 
@@ -47,6 +47,11 @@ export const donorService = {
   // Create donation
   createDonation: async (donationData) => {
     const response = await api.post('/payments/donate', donationData);
+    return response.data;
+  },
+  // Create time donation (volunteer application for a campaign)
+  createTimeDonation: async (data) => {
+    const response = await api.post('/volunteers/time-donate', data);
     return response.data;
   },
 };
