@@ -11,7 +11,7 @@ const generateToken = (userId, role) => {
   });
 };
 
-// @desc    Register a new user
+
 // @route   POST /api/auth/register
 const register = async (req, res) => {
   try {
@@ -35,7 +35,7 @@ const register = async (req, res) => {
         phoneNumber: profileData.phoneNumber || "",
         address: profileData.address || "",
         occupation: profileData.occupation || "",
-        userId: user._id,
+        userId: user._id,  // link to user
       });
     } else if (role === "NGO") {
       await NGO.create({
@@ -75,7 +75,6 @@ const register = async (req, res) => {
   }
 };
 
-// @desc    Login user
 // @route   POST /api/auth/login
 const login = async (req, res) => {
   try {

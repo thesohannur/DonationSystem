@@ -3,16 +3,19 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Home from './pages/Home';
 
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboard from './components/admin/AdminDashboard';
+
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* Auth Routes */}
-        {/* <Route path="/auth/register" element={<Register />} />
-        <Route path="/auth/login" element={<Login />} /> */}
         
-        {/* Other Routes */}
+        {/* Admin Routes wrapped in Layout */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<AdminDashboard />} />
+        </Route>
       </Routes>
     </Router>
   );
