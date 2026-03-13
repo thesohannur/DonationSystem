@@ -5,6 +5,7 @@ import Home from './pages/Home';
 
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
+import UserManagement from './components/admin/UserManagement';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         {/* Admin Routes wrapped in Layout */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<UserManagement />} />
         </Route>
       </Routes>
     </Router>
