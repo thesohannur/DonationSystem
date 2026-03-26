@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
 import UserManagement from './components/admin/UserManagement';
+import NGOVerification from './components/admin/NGOVerification';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<UserManagement />} />
+          <Route path="ngo-verification" element={<NGOVerification />} />
         </Route>
       </Routes>
     </Router>

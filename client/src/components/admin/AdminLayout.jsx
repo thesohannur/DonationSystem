@@ -24,6 +24,9 @@ const AdminLayout = () => {
           <NavLink to="/admin/users" className={({ isActive }) => (isActive ? 'active-link' : '')}>
             User Management
           </NavLink>
+          <NavLink to="/admin/ngo-verification" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+            NGO Verification
+          </NavLink>
         </nav>
         <div className="sidebar-footer">
           <button onClick={handleLogout} className="logout-btn">
