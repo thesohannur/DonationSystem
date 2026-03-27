@@ -1,0 +1,305 @@
+.admin-campaigns {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.admin-campaigns h1 {
+  margin-top: 0;
+  color: #1e293b;
+}
+
+.uv-header p {
+  color: #64748b;
+  margin-bottom: 30px;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.campaign-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.badge-status {
+  background-color: #fef08a;
+  color: #854d0e;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.card-body {
+  padding: 20px;
+  flex: 1;
+}
+
+.card-body p {
+  margin: 0 0 10px 0;
+  color: #475569;
+  font-size: 14px;
+}
+
+.card-actions {
+  padding: 15px 20px;
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  gap: 10px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.card-actions button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-approve {
+  background-color: #10b981;
+  color: white;
+}
+
+.btn-approve:hover {
+  background-color: #059669;
+}
+
+.btn-reject {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.btn-reject:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.no-pending {
+  background-color: white;
+  padding: 40px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+  grid-column: 1 / -1;
+}
+
+.no-pending p {
+  color: #64748b;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Filter Tabs */
+.campaign-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1.5px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-tab:hover {
+  border-color: #94a3b8;
+  color: #334155;
+}
+
+.filter-tab.active {
+  background: #0f172a;
+  color: white;
+  border-color: #0f172a;
+}
+
+.filter-count {
+  background: rgba(255,255,255,0.2);
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+}
+
+.filter-tab:not(.active) .filter-count {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* Badge status variants */
+.badge-status.approved { background: #dcfce7; color: #15803d; }
+.badge-status.pending  { background: #fef9c3; color: #854d0e; }
+.badge-status.rejected { background: #fee2e2; color: #991b1b; }
+
+/* View Details button */
+.btn-view-details {
+  background: white;
+  color: #334155;
+  border: 1.5px solid #cbd5e1 !important;
+}
+
+.btn-view-details:hover {
+  background: #f8fafc;
+  border-color: #94a3b8 !important;
+}
+
+/* Delete button in modal */
+.btn-delete {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5 !important;
+}
+
+.btn-delete:hover {
+  background: #fecaca;
+}
+
+.btn-close-modal {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.btn-close-modal:hover {
+  background: #f1f5f9;
+}
+
+/* Campaign Detail Modal */
+.camp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.camp-modal {
+  background: white;
+  border-radius: 14px;
+  width: 90%;
+  max-width: 540px;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
+  overflow: hidden;
+  animation: campSlideUp 0.2s ease-out;
+}
+
+@keyframes campSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.camp-modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.camp-modal-header h2 {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+.camp-modal-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.camp-modal-close:hover { color: #475569; }
+
+.camp-modal-body {
+  padding: 20px 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.camp-detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+}
+
+.camp-detail-row span:first-child {
+  color: #64748b;
+  font-weight: 500;
+  min-width: 130px;
+}
+
+.camp-detail-row span:last-child {
+  color: #1e293b;
+  text-align: right;
+}
+
+.camp-modal-footer {
+  display: flex;
+  gap: 10px;
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.camp-modal-footer button {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}

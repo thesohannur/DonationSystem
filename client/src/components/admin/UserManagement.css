@@ -1,3 +1,9 @@
+.user-management {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
 .user-management h1 {
   margin-top: 0;
   color: #1e293b;
@@ -110,4 +116,167 @@
   text-align: center;
   color: #64748b;
   padding: 30px !important;
+}
+
+.admin-lock {
+  padding: 6px 12px;
+  border-radius: 4px;
+  background-color: #f1f5f9;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-block;
+  user-select: none;
+}
+
+/* Profile Badge Styling */
+.profile-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.profile-badge.verified {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.profile-badge.pending {
+  background-color: #fef08a;
+  color: #854d0e;
+}
+
+.profile-badge.na {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+}
+
+/* Action Buttons Container */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.btn-verify {
+  background-color: #0ea5e9;
+  color: white;
+  border: 1px solid transparent !important;
+}
+.btn-verify:hover {
+  background-color: #0284c7;
+}
+
+.btn-unverify {
+  background-color: #f8fafc;
+  color: #475569;
+  border: 1px solid #cbd5e1 !important;
+}
+.btn-unverify:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-view {
+  background-color: #6366f1;
+  color: white;
+  border: 1px solid transparent !important;
+}
+
+.btn-view:hover {
+  background-color: #4f46e5;
+}
+
+/* Modal CSS */
+.profile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.profile-modal {
+  background: white;
+  padding: 0;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  overflow: hidden;
+  animation: scaleUp 0.2s ease-out;
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #0f172a;
+}
+
+.modal-body {
+  padding: 20px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.modal-body p {
+  margin: 0 0 12px;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.modal-body strong {
+  color: #1e293b;
+  display: inline-block;
+  width: 140px;
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-close {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #475569;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-close:hover {
+  background: #f1f5f9;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }

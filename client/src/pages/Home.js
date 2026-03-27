@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import '../styles/Home.css';
 import HeroSection from '../components/HeroSection';
 import FeaturesSection from '../components/FeaturesSection';
@@ -9,8 +8,6 @@ import TestimonialsSection from '../components/TestimonialsSection';
 import CTASection from '../components/CTASection';
 
 const Home = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="home">
       <HeroSection />

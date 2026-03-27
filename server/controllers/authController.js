@@ -51,6 +51,12 @@ const register = async (req, res) => {
         userId: user._id,
       });
     } else if (role === "ADMIN") {
+      if (req.body.adminSecretKey !== process.env.ADMIN_SECRET_KEY) {
+        // Rollback created root user if admin validation fails
+        await User.findByIdAndDelete(user._id);
+        return res.status(403).json({ message: "Invalid Admin Secret Key" });
+      }
+
       await Admin.create({
         email,
         fullName: profileData.fullName,

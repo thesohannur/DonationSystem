@@ -1,0 +1,202 @@
+.admin-profile {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.ap-page-header h1 {
+  margin: 0 0 4px;
+  color: #0f172a;
+  font-size: 22px;
+}
+
+.ap-page-header p {
+  margin: 0 0 24px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.ap-loading {
+  color: #64748b;
+  padding: 20px 0;
+}
+
+/* ===== Alert Banners ===== */
+.ap-success {
+  padding: 12px 16px;
+  background: #f0fdf4;
+  border-left: 4px solid #22c55e;
+  border-radius: 6px;
+  color: #15803d;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.ap-error {
+  padding: 12px 16px;
+  background: #fef2f2;
+  border-left: 4px solid #ef4444;
+  border-radius: 6px;
+  color: #b91c1c;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* ===== Card ===== */
+.ap-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.ap-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.ap-card-header h2 {
+  margin: 0;
+  font-size: 16px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.ap-edit-btn {
+  padding: 7px 16px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ap-edit-btn:hover { background: #4338ca; }
+
+/* ===== Info View ===== */
+.ap-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.ap-row {
+  display: flex;
+  padding: 14px 24px;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ap-row:last-child { border-bottom: none; }
+
+.ap-label {
+  width: 180px;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.ap-value {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.ap-role-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  background: #ede9fe;
+  color: #6d28d9;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ===== Edit Form ===== */
+.ap-form {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ap-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ap-field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.ap-field input {
+  padding: 9px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  font-size: 14px;
+  color: #111827;
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.ap-field input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+}
+
+.ap-field input:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.ap-hint {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.ap-actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.ap-save-btn {
+  padding: 9px 20px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ap-save-btn:hover:not(:disabled) { background: #4338ca; }
+.ap-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.ap-cancel-btn {
+  padding: 9px 20px;
+  background: white;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ap-cancel-btn:hover { background: #f8fafc; }

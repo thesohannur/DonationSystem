@@ -10,8 +10,8 @@ const DonorLayout = ({ children }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/donor/login');
+    localStorage.removeItem('role');
+    navigate('/auth/login');
   };
 
   const isActive = (path) => {

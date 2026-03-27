@@ -8,8 +8,53 @@ const Admin = require("../models/Admin");
 // @access  Admin
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password");
+    const users = await User.find().select("-password").lean();
+    
+    // Attach profile verification statuses and names
+    for (let u of users) {
+      if (u.role === 'DONOR') {
+        const d = await Donor.findOne({ userId: u._id }).lean();
+        u.isProfileApproved = d ? !!d.approved : false;
+        u.name = d ? `${d.firstName} ${d.lastName}` : "Unknown Donor";
+        u.profile = d || {};
+      } else if (u.role === 'NGO') {
+        const n = await NGO.findOne({ userId: u._id }).lean();
+        u.isProfileApproved = n ? !!n.isVerified : false;
+        u.name = n ? n.organizationName : "Unknown NGO";
+        u.profile = n || {};
+      } else {
+        const a = await Admin.findOne({ userId: u._id }).lean();
+        u.isProfileApproved = true; // Admins implicitly approved
+        u.name = a ? a.fullName : "System Admin";
+        u.profile = a || {};
+      }
+    }
+
     res.status(200).json({ success: true, count: users.length, data: users });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Approve or Unapprove a Donor/NGO profile
+// @route   PATCH /api/admin/users/:id/approval
+// @access  Admin
+const toggleUserApproval = async (req, res) => {
+  try {
+    const { isApproved } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    if (user.role === 'DONOR') {
+      await Donor.findOneAndUpdate({ userId: user._id }, { approved: isApproved });
+    } else if (user.role === 'NGO') {
+      await NGO.findOneAndUpdate({ userId: user._id }, { isVerified: isApproved });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Profile ${isApproved ? "approved/verified" : "unapproved/unverified"}`,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -92,8 +137,37 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// @desc    Get dashboard statistics
-// @route   GET /api/admin/stats
+// @desc    Get current admin's profile
+// @route   GET /api/admin/profile
+// @access  Admin
+const getAdminProfile = async (req, res) => {
+  try {
+    const admin = await Admin.findOne({ userId: req.user.id });
+    if (!admin) return res.status(404).json({ success: false, message: 'Admin profile not found' });
+    res.status(200).json({ success: true, data: admin });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Update current admin's profile
+// @route   PUT /api/admin/profile
+// @access  Admin
+const updateAdminProfile = async (req, res) => {
+  try {
+    const { fullName } = req.body;
+    const admin = await Admin.findOneAndUpdate(
+      { userId: req.user.id },
+      { fullName },
+      { new: true, runValidators: true }
+    );
+    if (!admin) return res.status(404).json({ success: false, message: 'Admin profile not found' });
+    res.status(200).json({ success: true, data: admin });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @access  Admin
 const getDashboardStats = async (req, res) => {
   try {
@@ -101,8 +175,16 @@ const getDashboardStats = async (req, res) => {
     const totalDonors = await Donor.countDocuments();
     const totalNGOs = await NGO.countDocuments();
     const totalAdmins = await Admin.countDocuments();
+    
+    // Profile verified states
     const approvedDonors = await Donor.countDocuments({ approved: true });
     const verifiedNGOs = await NGO.countDocuments({ isVerified: true });
+    const unapprovedDonors = await Donor.countDocuments({ approved: false });
+    const unverifiedNGOs = await NGO.countDocuments({ isVerified: false });
+    
+    // System suspended states
+    const suspendedDonorsCount = await User.countDocuments({ role: 'DONOR', isActive: false });
+    const suspendedNGOsCount = await User.countDocuments({ role: 'NGO', isActive: false });
     
     res.status(200).json({
       success: true,
@@ -113,6 +195,10 @@ const getDashboardStats = async (req, res) => {
         totalAdmins,
         approvedDonors,
         verifiedNGOs,
+        unapprovedDonors,
+        unverifiedNGOs,
+        suspendedDonors: suspendedDonorsCount,
+        suspendedNGOs: suspendedNGOsCount,
       },
     });
   } catch (error) {
@@ -124,6 +210,9 @@ module.exports = {
   getAllUsers,
   getUserById,
   updateUserStatus,
+  toggleUserApproval,
   deleteUser,
   getDashboardStats,
+  getAdminProfile,
+  updateAdminProfile,
 };

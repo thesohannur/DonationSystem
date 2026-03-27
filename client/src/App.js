@@ -7,14 +7,8 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import Home from "./pages/Home";
-import AdminPage from "./pages/AdminPage";
-import AdminLogin from "./pages/AdminLogin";
-import AdminSignup from "./pages/AdminSignup";
-import NGOLogin from "./pages/NGOLogin";
-import NGOSignup from "./pages/NGOSignup";
-import DonorLogin from "./pages/DonorLogin";
-import DonorSignup from "./pages/DonorSignup";
-import RoleChoice from "./pages/RoleChoice";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
 
 // Import Donor Components
 import DonorLayout from "./components/donor/DonorLayout";
@@ -27,13 +21,14 @@ import DonorProfile from "./components/donor/DonorProfile";
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
 import UserManagement from './components/admin/UserManagement';
-import NGOVerification from './components/admin/NGOVerification';
+import AdminCampaigns from './components/admin/AdminCampaigns';
+import AdminProfile from './components/admin/AdminProfile';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    return <Navigate to="/donor/login" replace />;
+    return <Navigate to="/auth/login" replace />;
   }
 
   return children;
@@ -46,15 +41,8 @@ function App() {
         <Route path="/" element={<Home />} />
 
         {/* Auth Routes */}
-        <Route path="/choose/:mode" element={<RoleChoice />} />
-        <Route path="/auth/register" element={<RoleChoice mode="register" />} />
-        <Route path="/auth/login" element={<RoleChoice mode="login" />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/signup" element={<AdminSignup />} />
-        <Route path="/ngo/login" element={<NGOLogin />} />
-        <Route path="/ngo/signup" element={<NGOSignup />} />
-        <Route path="/donor/login" element={<DonorLogin />} />
-        <Route path="/donor/signup" element={<DonorSignup />} />
+        <Route path="/auth/register" element={<Register />} />
+        <Route path="/auth/login" element={<Login />} />
 
         {/* Protected Donor Routes with Layout */}
         <Route
@@ -112,7 +100,8 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<UserManagement />} />
-          <Route path="ngo-verification" element={<NGOVerification />} />
+          <Route path="campaigns" element={<AdminCampaigns />} />
+          <Route path="profile" element={<AdminProfile />} />
         </Route>
       </Routes>
     </Router>

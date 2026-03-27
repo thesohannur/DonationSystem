@@ -11,7 +11,11 @@ const campaignSchema = new mongoose.Schema({
   },
   expirationTime: {
     type: Date,
-    required: [true, "Expiration time is required"],
+    default: null, // null = no expiration (runs indefinitely)
+  },
+  targetAmount: {
+    type: Number,
+    default: null, // null = no target set
   },
   amount: {
     type: Number,
