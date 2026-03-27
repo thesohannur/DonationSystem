@@ -7,6 +7,8 @@ const {
   getMyProfile,
   updateDonor,
   updateMyProfile,
+  uploadMyProfilePicture,
+  removeMyProfilePicture,
   getDonorStats,
   getMyDonations,
   approveDonor,
@@ -17,6 +19,8 @@ const { protect, authorize } = require("../middleware/auth");
 // Donor-specific
 router.get("/me", protect, authorize("DONOR"), getMyProfile);
 router.patch("/me", protect, authorize("DONOR"), updateMyProfile);
+router.patch("/me/profile-picture", protect, authorize("DONOR"), uploadMyProfilePicture);
+router.delete("/me/profile-picture", protect, authorize("DONOR"), removeMyProfilePicture);
 router.get("/me/stats", protect, authorize("DONOR"), getDonorStats);
 router.get("/me/donations", protect, authorize("DONOR"), getMyDonations);
 

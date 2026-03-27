@@ -2,6 +2,7 @@ const Donor = require("../models/Donor");
 const User = require("../models/User");
 const Payment = require("../models/Payment");
 const Volunteer = require("../models/Volunteer");
+const cloudinary = require("../config/cloudinary");
 
 // @desc    Get all donors
 // @route   GET /api/donors
@@ -144,6 +145,80 @@ const updateMyProfile = async (req, res) => {
   }
 };
 
+// @desc    Upload/update donor profile picture
+// @route   PATCH /api/donors/me/profile-picture
+// @access  Private (Donor)
+const uploadMyProfilePicture = async (req, res) => {
+  try {
+    const { image } = req.body;
+
+    if (!image || typeof image !== "string") {
+      return res.status(400).json({ success: false, message: "Image is required" });
+    }
+
+    if (!image.startsWith("data:image/")) {
+      return res.status(400).json({ success: false, message: "Invalid image format" });
+    }
+
+    const donor = await Donor.findOne({ userId: req.user._id });
+    if (!donor) {
+      return res.status(404).json({ success: false, message: "Donor profile not found" });
+    }
+
+    if (donor.profileImagePublicId) {
+      await cloudinary.uploader.destroy(donor.profileImagePublicId);
+    }
+
+    const uploadResult = await cloudinary.uploader.upload(image, {
+      folder: "donation-system/donors",
+      resource_type: "image",
+      transformation: [
+        { width: 400, height: 400, crop: "fill", gravity: "face" },
+        { quality: "auto", fetch_format: "auto" },
+      ],
+    });
+
+    donor.profileImageUrl = uploadResult.secure_url;
+    donor.profileImagePublicId = uploadResult.public_id;
+    await donor.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile picture updated successfully",
+      data: {
+        profileImageUrl: donor.profileImageUrl,
+        profileImagePublicId: donor.profileImagePublicId,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Remove donor profile picture
+// @route   DELETE /api/donors/me/profile-picture
+// @access  Private (Donor)
+const removeMyProfilePicture = async (req, res) => {
+  try {
+    const donor = await Donor.findOne({ userId: req.user._id });
+    if (!donor) {
+      return res.status(404).json({ success: false, message: "Donor profile not found" });
+    }
+
+    if (donor.profileImagePublicId) {
+      await cloudinary.uploader.destroy(donor.profileImagePublicId);
+    }
+
+    donor.profileImageUrl = "";
+    donor.profileImagePublicId = "";
+    await donor.save();
+
+    res.status(200).json({ success: true, message: "Profile picture removed successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @desc    Get donor statistics
 // @route   GET /api/donors/me/stats
 // @access  Private (Donor)
@@ -259,6 +334,8 @@ module.exports = {
   deleteDonor,
   getMyProfile,
   updateMyProfile,
+  uploadMyProfilePicture,
+  removeMyProfilePicture,
   getDonorStats,
   getMyDonations
 };

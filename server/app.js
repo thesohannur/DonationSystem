@@ -17,7 +17,8 @@ app.use(cors({
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Request logger (middleware)
 app.use((req, res, next) => {
