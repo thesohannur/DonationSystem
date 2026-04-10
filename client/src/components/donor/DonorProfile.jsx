@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { donorService } from '../../services/donorService';
 import { formatDate, formatCurrency } from '../../utils/helpers';
 import './DonorProfile.css';
+import { Calendar, Calendar1Icon, CalendarX2, HeartHandshake, HeartHandshakeIcon, Wallet } from 'lucide-react';
 
 const DonorProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -266,7 +267,7 @@ const DonorProfile = () => {
           
           <div className="stats-cards">
             <div className="impact-card">
-              <div className="impact-icon">💰</div>
+               <Wallet className="stat-icon icon-gold" size={48} />
               <div className="impact-content">
                 <h3>Total Donated</h3>
                 <p className="impact-value">{formatCurrency(stats?.totalDonated || 0)}</p>
@@ -274,7 +275,7 @@ const DonorProfile = () => {
             </div>
 
             <div className="impact-card">
-              <div className="impact-icon">❤️</div>
+               <HeartHandshakeIcon className="stat-icon icon-red" size={48} />
               <div className="impact-content">
                 <h3>Total Donations</h3>
                 <p className="impact-value">{stats?.donationCount || 0}</p>
@@ -282,7 +283,7 @@ const DonorProfile = () => {
             </div>
 
             <div className="impact-card">
-              <div className="impact-icon">🎯</div>
+                <Calendar className="stat-icon icon-pink" size={48} />
               <div className="impact-content">
                 <h3>Campaigns Supported</h3>
                 <p className="impact-value">{stats?.campaignsSupported || 0}</p>
@@ -298,8 +299,8 @@ const DonorProfile = () => {
             </div>
             <div className="account-detail">
               <span>Account Status:</span>
-              <span className={`detail-value ${profile?.userId?.isActive ? 'active' : 'inactive'}`}>
-                {profile?.userId?.isActive ? 'Active' : 'Inactive'}
+              <span className={`detail-value ${profile?.userId?.approved ? 'active' : 'inactive'}`}>
+                {profile?.userId?.approved ? 'Active' : 'Not Approved'}
               </span>
             </div>
           </div>

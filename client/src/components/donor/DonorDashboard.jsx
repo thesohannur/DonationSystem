@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { donorService } from '../../services/donorService';
 import { formatCurrency, formatDate } from '../../utils/helpers';
 import './DonorDashboard.css';
+import { BarChart3, Calendar, Gift, HeartHandshake, Hourglass, Search, Target, User, Wallet } from "lucide-react";
 
 const DonorDashboard = () => {
   const [profile, setProfile] = useState(null);
@@ -19,18 +20,52 @@ const DonorDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [profileRes, statsRes, donationsRes] = await Promise.all([
-        donorService.getMyProfile(),
-        donorService.getMyStats(),
-        donorService.getMyDonations(),
-      ]);
+      setError('');
+
+      // Fetch profile
+      let profileRes, statsRes, donationsRes;
+
+      try {
+        console.log('Fetching profile...');
+        profileRes = await donorService.getMyProfile();
+        console.log('Profile loaded:', profileRes);
+      } catch (err) {
+        console.error('Profile error:', err.response?.data || err.message);
+        throw new Error('Failed to load profile: ' + (err.response?.data?.message || err.message));
+      }
+
+      try {
+        console.log('Fetching stats...');
+        statsRes = await donorService.getMyStats();
+        console.log('Stats loaded:', statsRes);
+      } catch (err) {
+        console.error('Stats error:', err.response?.data || err.message);
+        statsRes = {
+          data: {
+            totalDonated: 0,
+            donationCount: 0,
+            campaignsSupported: 0,
+            registrationDate: profileRes.data.registrationDate,
+            approved: profileRes.data.approved
+          }
+        };
+      }
+
+      try {
+        console.log('Fetching donations...');
+        donationsRes = await donorService.getMyDonations();
+        console.log('Donations loaded:', donationsRes);
+      } catch (err) {
+        console.error('Donations error:', err.response?.data || err.message);
+        donationsRes = { data: [] };
+      }
 
       setProfile(profileRes.data);
       setStats(statsRes.data);
-      setRecentDonations(donationsRes.data.slice(0, 5)); // Get last 5 donations
-      setError('');
+      setRecentDonations(donationsRes.data.slice(0, 5));
+
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load dashboard data');
+      setError(err.message || 'Failed to load dashboard data');
       console.error('Dashboard error:', err);
     } finally {
       setLoading(false);
@@ -55,7 +90,6 @@ const DonorDashboard = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Header */}
       <div className="dashboard-header">
         <div className="welcome-section">
           <h1>Welcome back, {profile?.firstName}!</h1>
@@ -63,7 +97,7 @@ const DonorDashboard = () => {
         </div>
         {!stats?.approved && (
           <div className="approval-notice">
-            <span className="notice-icon">⏳</span>
+            <Hourglass className="notice-icon" />
             <span>Your account is pending approval</span>
           </div>
         )}
@@ -72,7 +106,7 @@ const DonorDashboard = () => {
       {/* Stats Cards */}
       <div className="stats-grid">
         <div className="stat-card stat-card-primary">
-          <div className="stat-icon">💰</div>
+          <Wallet className="stat-icon" size={40} />
           <div className="stat-content">
             <h3>Total Donated</h3>
             <p className="stat-value">{formatCurrency(stats?.totalDonated || 0)}</p>
@@ -80,7 +114,7 @@ const DonorDashboard = () => {
         </div>
 
         <div className="stat-card stat-card-secondary">
-          <div className="stat-icon">🎯</div>
+          <Target className="stat-icon" size={40} />
           <div className="stat-content">
             <h3>Campaigns Supported</h3>
             <p className="stat-value">{stats?.campaignsSupported || 0}</p>
@@ -88,7 +122,7 @@ const DonorDashboard = () => {
         </div>
 
         <div className="stat-card stat-card-tertiary">
-          <div className="stat-icon">❤️</div>
+          <HeartHandshake className="stat-icon" size={40} />
           <div className="stat-content">
             <h3>Total Donations</h3>
             <p className="stat-value">{stats?.donationCount || 0}</p>
@@ -96,7 +130,7 @@ const DonorDashboard = () => {
         </div>
 
         <div className="stat-card stat-card-info">
-          <div className="stat-icon">📅</div>
+          <Calendar className="stat-icon" size={40} />
           <div className="stat-content">
             <h3>Member Since</h3>
             <p className="stat-value-date">
@@ -114,21 +148,21 @@ const DonorDashboard = () => {
             className="action-btn action-btn-primary"
             onClick={() => navigate('/donor/campaigns')}
           >
-            <span className="action-icon">🔍</span>
+            <Search className="action-icon" size={18} />
             <span>Browse Campaigns</span>
           </button>
           <button
             className="action-btn action-btn-secondary"
             onClick={() => navigate('/donor/donations')}
           >
-            <span className="action-icon">📊</span>
+            <BarChart3 className="action-icon icon-purple" size={20} />
             <span>View History</span>
           </button>
           <button
             className="action-btn action-btn-tertiary"
             onClick={() => navigate('/donor/profile')}
           >
-            <span className="action-icon">👤</span>
+            <User className="action-icon" size={18} />
             <span>Update Profile</span>
           </button>
         </div>
@@ -168,7 +202,9 @@ const DonorDashboard = () => {
       {/* Empty State */}
       {recentDonations.length === 0 && stats?.donationCount === 0 && (
         <div className="empty-state">
-          <div className="empty-state-icon">💝</div>
+          <div className="empty-state-icon">
+            <Gift size={50} />
+          </div>
           <h3>No donations yet</h3>
           <p>Start making a difference today by donating to a campaign</p>
           <button
