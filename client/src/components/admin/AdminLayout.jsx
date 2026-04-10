@@ -21,6 +21,9 @@ const AdminLayout = () => {
           <NavLink to="/admin/dashboard" className={({ isActive }) => (isActive ? 'active-link' : '')}>
             Dashboard
           </NavLink>
+          <NavLink to="/admin/users" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+            User Management
+          </NavLink>
         </nav>
         <div className="sidebar-footer">
           <button onClick={handleLogout} className="logout-btn">

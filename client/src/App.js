@@ -26,6 +26,7 @@ import DonorProfile from "./components/donor/DonorProfile";
 
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
+import UserManagement from './components/admin/UserManagement';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -109,6 +110,7 @@ function App() {
         {/* Admin Routes wrapped in Layout */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<UserManagement />} />
         </Route>
       </Routes>
     </Router>
