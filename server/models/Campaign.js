@@ -29,6 +29,11 @@ const campaignSchema = new mongoose.Schema({
     type: String,
     required: [true, "Description is required"],
   },
+  name: {
+    type: String,
+    trim: true,
+    default: "",
+  },
   imageUrl: {
     type: String,
     default: "",

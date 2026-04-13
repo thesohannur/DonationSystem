@@ -254,6 +254,7 @@ const getMyDonations = async (req, res) => {
 
     const donations = await Payment.find({ ngoId: ngo._id, status: "SUCCESS" })
       .populate("donorId", "firstName lastName email")
+      .populate("campaignId", "name description")
       .sort({ timestamp: -1 })
       .lean();
 
@@ -275,7 +276,7 @@ const getMyVolunteers = async (req, res) => {
 
     const volunteers = await Volunteer.find({ ngoId: ngo._id, campaignId: { $ne: null } })
       .populate("donorId", "firstName lastName email phoneNumber")
-      .populate("campaignId", "description expirationTime acceptsMoney acceptsTime")
+      .populate("campaignId", "name description expirationTime acceptsMoney acceptsTime")
       .sort({ applicationDate: -1 })
       .lean();
 

@@ -95,6 +95,38 @@ const createCampaign = async (req, res) => {
     campaignData.approved = false;
     campaignData.pendingCheckup = true;
 
+    if (!campaignData.name || !String(campaignData.name).trim()) {
+      return res.status(400).json({ success: false, message: "Campaign name is required." });
+    }
+    campaignData.name = String(campaignData.name).trim();
+
+    if (!campaignData.expirationTime) {
+      return res.status(400).json({ success: false, message: "Expiration date is required." });
+    }
+
+    const createExpirationDate = new Date(campaignData.expirationTime);
+    if (Number.isNaN(createExpirationDate.getTime()) || createExpirationDate <= new Date()) {
+      return res.status(400).json({ success: false, message: "Expiration date must be in the future." });
+    }
+    campaignData.expirationTime = createExpirationDate;
+
+    const acceptsMoneyFlag = campaignData.acceptsMoney === undefined
+      ? true
+      : campaignData.acceptsMoney === true || campaignData.acceptsMoney === "true";
+    const acceptsTimeFlag = campaignData.acceptsTime === undefined
+      ? false
+      : campaignData.acceptsTime === true || campaignData.acceptsTime === "true";
+
+    if (!acceptsMoneyFlag && !acceptsTimeFlag) {
+      return res.status(400).json({ success: false, message: "Select at least one: accept money or accept time." });
+    }
+
+    campaignData.acceptsMoney = acceptsMoneyFlag;
+    campaignData.acceptsTime = acceptsTimeFlag;
+    if (!acceptsMoneyFlag) {
+      campaignData.targetAmount = null;
+    }
+
     if (image && typeof image === "string") {
       const uploadResult = await uploadImage(image, "donation-system/campaigns");
       campaignData.imageUrl = uploadResult.secure_url;
@@ -127,6 +159,44 @@ const updateCampaign = async (req, res) => {
 
     const { image, ...updateData } = req.body;
 
+    if (updateData.name !== undefined) {
+      if (!String(updateData.name).trim()) {
+        return res.status(400).json({ success: false, message: "Campaign name cannot be empty." });
+      }
+      updateData.name = String(updateData.name).trim();
+    }
+
+    const nextExpirationTime = updateData.expirationTime === undefined
+      ? campaign.expirationTime
+      : updateData.expirationTime;
+
+    if (!nextExpirationTime) {
+      return res.status(400).json({ success: false, message: "Expiration date is required." });
+    }
+
+    const updateExpirationDate = new Date(nextExpirationTime);
+    if (Number.isNaN(updateExpirationDate.getTime()) || updateExpirationDate <= new Date()) {
+      return res.status(400).json({ success: false, message: "Expiration date must be in the future." });
+    }
+    updateData.expirationTime = updateExpirationDate;
+
+    const nextAcceptsMoney = updateData.acceptsMoney === undefined
+      ? campaign.acceptsMoney
+      : updateData.acceptsMoney === true || updateData.acceptsMoney === "true";
+    const nextAcceptsTime = updateData.acceptsTime === undefined
+      ? campaign.acceptsTime
+      : updateData.acceptsTime === true || updateData.acceptsTime === "true";
+
+    if (!nextAcceptsMoney && !nextAcceptsTime) {
+      return res.status(400).json({ success: false, message: "Select at least one: accept money or accept time." });
+    }
+
+    updateData.acceptsMoney = nextAcceptsMoney;
+    updateData.acceptsTime = nextAcceptsTime;
+    if (!nextAcceptsMoney) {
+      updateData.targetAmount = null;
+    }
+
     Object.keys(updateData).forEach((key) => {
       if (updateData[key] !== undefined) {
         campaign[key] = updateData[key];
@@ -146,6 +216,13 @@ const updateCampaign = async (req, res) => {
         campaign.imageUrl = "";
         campaign.imagePublicId = "";
       }
+    }
+
+    // Any NGO-side edit must go through admin approval again.
+    if (req.user.role !== "ADMIN") {
+      campaign.approved = false;
+      campaign.pendingCheckup = true;
+      campaign.rejectFlag = 0;
     }
 
     const savedCampaign = await campaign.save();

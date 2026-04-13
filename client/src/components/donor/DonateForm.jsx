@@ -148,7 +148,7 @@ const DonateForm = () => {
               )}
             </div>
 
-            <h3 className="campaign-description">{campaign.description}</h3>
+            <h3 className="campaign-description">{campaign.name || campaign.description}</h3>
 
             <div className="detail-item">
               <span className="detail-label">NGO</span>

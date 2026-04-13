@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { donorService } from '../../services/donorService';
 import CampaignCard from './CampaignCard';
 import './BrowseCampaigns.css';
@@ -8,23 +8,30 @@ const BrowseCampaigns = () => {
   const [filteredCampaigns, setFilteredCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isApproved, setIsApproved] = useState(true);
   const [filters, setFilters] = useState({
     donationType: 'all', // 'all' | 'money' | 'time'
     hideExpired: true,
-    sortBy: 'recent',
+    sortBy: 'expiring_soon',
   });
 
   useEffect(() => {
     fetchCampaigns();
   }, []);
 
-  useEffect(() => {
-    applyFilters();
-  }, [filters, campaigns]);
-
   const fetchCampaigns = async () => {
     try {
       setLoading(true);
+      const profileResponse = await donorService.getMyProfile();
+      const approved = Boolean(profileResponse.data?.approved);
+      setIsApproved(approved);
+
+      if (!approved) {
+        setCampaigns([]);
+        setError('Campaign tab is locked until your account is verified.');
+        return;
+      }
+
       const response = await donorService.getActiveCampaigns();
       setCampaigns(response.data);
       setError('');
@@ -36,7 +43,7 @@ const BrowseCampaigns = () => {
     }
   };
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = [...campaigns];
 
     if (filters.donationType === 'money') {
@@ -63,7 +70,11 @@ const BrowseCampaigns = () => {
     }
 
     setFilteredCampaigns(filtered);
-  };
+  }, [campaigns, filters]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
 
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({
@@ -76,7 +87,7 @@ const BrowseCampaigns = () => {
     setFilters({
       donationType: 'all',
       hideExpired: true,
-      sortBy: 'recent',
+      sortBy: 'expiring_soon',
     });
   };
 
@@ -92,6 +103,14 @@ const BrowseCampaigns = () => {
     return (
       <div className="campaigns-container">
         <div className="error-message">{error}</div>
+      </div>
+    );
+  }
+
+  if (!isApproved) {
+    return (
+      <div className="campaigns-container">
+        <div className="error-message">Campaign tab is locked until your account is verified.</div>
       </div>
     );
   }
