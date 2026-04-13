@@ -1,4 +1,17 @@
 const Campaign = require("../models/Campaign");
+const NGO = require("../models/NGO");
+const cloudinary = require("../config/cloudinary");
+
+const uploadImage = async (image, folder) => {
+  return cloudinary.uploader.upload(image, {
+    folder,
+    resource_type: "image",
+    transformation: [
+      { width: 1200, height: 800, crop: "limit" },
+      { quality: "auto", fetch_format: "auto" },
+    ],
+  });
+};
 
 // @desc    Get all campaigns
 // @route   GET /api/campaigns
@@ -47,12 +60,48 @@ const getCampaignsByNGO = async (req, res) => {
   }
 };
 
+// @desc    Get current NGO campaigns
+// @route   GET /api/campaigns/me
+// @access  Private (NGO)
+const getMyCampaigns = async (req, res) => {
+  try {
+    const ngo = await NGO.findOne({ userId: req.user._id });
+    if (!ngo) {
+      return res.status(404).json({ success: false, message: "NGO profile not found" });
+    }
+
+    const campaigns = await Campaign.find({ ngoEmail: ngo.email })
+      .sort({ creationTime: -1 })
+      .lean();
+
+    res.status(200).json({ success: true, count: campaigns.length, data: campaigns });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @desc    Create campaign
 // @route   POST /api/campaigns
 // @access  Private (NGO only)
 const createCampaign = async (req, res) => {
   try {
-    const campaign = await Campaign.create(req.body);
+    const ngo = await NGO.findOne({ userId: req.user._id });
+    if (!ngo) {
+      return res.status(404).json({ success: false, message: "NGO profile not found" });
+    }
+
+    const { image, ...campaignData } = req.body;
+    campaignData.ngoEmail = ngo.email;
+    campaignData.approved = false;
+    campaignData.pendingCheckup = true;
+
+    if (image && typeof image === "string") {
+      const uploadResult = await uploadImage(image, "donation-system/campaigns");
+      campaignData.imageUrl = uploadResult.secure_url;
+      campaignData.imagePublicId = uploadResult.public_id;
+    }
+
+    const campaign = await Campaign.create(campaignData);
     res.status(201).json({ success: true, data: campaign });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -64,14 +113,43 @@ const createCampaign = async (req, res) => {
 // @access  Private (NGO or Admin)
 const updateCampaign = async (req, res) => {
   try {
-    const campaign = await Campaign.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const campaign = await Campaign.findById(req.params.id);
     if (!campaign) {
       return res.status(404).json({ success: false, message: "Campaign not found" });
     }
-    res.status(200).json({ success: true, data: campaign });
+
+    if (req.user.role !== "ADMIN") {
+      const ngo = await NGO.findOne({ userId: req.user._id });
+      if (!ngo || ngo.email !== campaign.ngoEmail) {
+        return res.status(403).json({ success: false, message: "Not authorized to modify this campaign" });
+      }
+    }
+
+    const { image, ...updateData } = req.body;
+
+    Object.keys(updateData).forEach((key) => {
+      if (updateData[key] !== undefined) {
+        campaign[key] = updateData[key];
+      }
+    });
+
+    if (image !== undefined) {
+      if (campaign.imagePublicId) {
+        await cloudinary.uploader.destroy(campaign.imagePublicId);
+      }
+
+      if (image) {
+        const uploadResult = await uploadImage(image, "donation-system/campaigns");
+        campaign.imageUrl = uploadResult.secure_url;
+        campaign.imagePublicId = uploadResult.public_id;
+      } else {
+        campaign.imageUrl = "";
+        campaign.imagePublicId = "";
+      }
+    }
+
+    const savedCampaign = await campaign.save();
+    res.status(200).json({ success: true, data: savedCampaign });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -120,10 +198,23 @@ const rejectCampaign = async (req, res) => {
 // @access  Private (NGO or Admin)
 const deleteCampaign = async (req, res) => {
   try {
-    const campaign = await Campaign.findByIdAndDelete(req.params.id);
+    const campaign = await Campaign.findById(req.params.id);
     if (!campaign) {
       return res.status(404).json({ success: false, message: "Campaign not found" });
     }
+
+    if (req.user.role !== "ADMIN") {
+      const ngo = await NGO.findOne({ userId: req.user._id });
+      if (!ngo || ngo.email !== campaign.ngoEmail) {
+        return res.status(403).json({ success: false, message: "Not authorized to delete this campaign" });
+      }
+    }
+
+    if (campaign.imagePublicId) {
+      await cloudinary.uploader.destroy(campaign.imagePublicId);
+    }
+
+    await Campaign.findByIdAndDelete(req.params.id);
     res.status(200).json({ success: true, message: "Campaign deleted" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -198,6 +289,7 @@ module.exports = {
   getAllCampaigns,
   getCampaign,
   getCampaignsByNGO,
+  getMyCampaigns,
   createCampaign,
   updateCampaign,
   approveCampaign,

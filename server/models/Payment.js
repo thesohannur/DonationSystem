@@ -11,6 +11,12 @@ const paymentSchema = new mongoose.Schema({
     ref: "NGO",
     required: true,
   },
+  campaignId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Campaign",
+    required: false,
+    default: null,
+  },
   amount: {
     type: Number,
     required: [true, "Amount is required"],

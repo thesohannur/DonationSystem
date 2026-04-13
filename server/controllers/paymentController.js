@@ -72,6 +72,7 @@ const createPayment = async (req, res) => {
     const payment = await Payment.create({
       donorId,
       ngoId,
+      campaignId: campaignId || null,
       amount,
       status: "SUCCESS",
     });
@@ -221,6 +222,7 @@ const createDonation = async (req, res) => {
     const payment = await Payment.create([{
       donorId: donor._id,
       ngoId: ngo._id,
+      campaignId: campaignId || null,
       amount: amount,
       status: "PENDING",
     }], { session });
