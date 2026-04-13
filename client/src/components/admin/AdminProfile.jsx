@@ -144,6 +144,7 @@ const AdminProfile = () => {
   };
 
   if (loading && !profile) return <div className="ap-loading">Loading profile...</div>;
+  if (!profile) return <div className="ap-error">{error || 'Failed to load profile data.'}</div>;
 
   return (
     <div className="admin-profile">
