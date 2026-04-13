@@ -24,6 +24,11 @@ import DonateForm from "./components/donor/DonateForm";
 import DonationHistory from "./components/donor/DonationHistory";
 import DonorProfile from "./components/donor/DonorProfile";
 
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboard from './components/admin/AdminDashboard';
+import UserManagement from './components/admin/UserManagement';
+import NGOVerification from './components/admin/NGOVerification';
+
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
 
@@ -39,6 +44,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+
         {/* Auth Routes */}
         <Route path="/choose/:mode" element={<RoleChoice />} />
         <Route path="/auth/register" element={<RoleChoice mode="register" />} />
@@ -49,11 +55,6 @@ function App() {
         <Route path="/ngo/signup" element={<NGOSignup />} />
         <Route path="/donor/login" element={<DonorLogin />} />
         <Route path="/donor/signup" element={<DonorSignup />} />
-        {/* <Route path="/auth/register" element={<Register />} />
-        <Route path="/auth/login" element={<Login />} /> */}
-
-        {/* Other Routes */}
-        {/* <Route path="/admin" element={<AdminPage />} /> */}
 
         {/* Protected Donor Routes with Layout */}
         <Route
@@ -106,6 +107,13 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Admin Routes wrapped in Layout */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<UserManagement />} />
+          <Route path="ngo-verification" element={<NGOVerification />} />
+        </Route>
       </Routes>
     </Router>
   );

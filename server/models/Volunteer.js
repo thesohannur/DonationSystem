@@ -9,7 +9,14 @@ const volunteerSchema = new mongoose.Schema({
   opportunityId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "VolunteerOpportunity",
-    required: true,
+    required: false,
+    default: null,
+  },
+  campaignId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Campaign",
+    required: false,
+    default: null,
   },
   ngoId: {
     type: mongoose.Schema.Types.ObjectId,

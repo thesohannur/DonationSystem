@@ -1,6 +1,7 @@
 const Donor = require("../models/Donor");
 const User = require("../models/User");
 const Payment = require("../models/Payment");
+const Volunteer = require("../models/Volunteer");
 
 // @desc    Get all donors
 // @route   GET /api/donors
@@ -153,22 +154,40 @@ const getDonorStats = async (req, res) => {
       return res.status(404).json({ success: false, message: "Donor not found" });
     }
 
-    // Get donation count
-    const donationCount = await Payment.countDocuments({ 
-      donorId: donor._id, 
-      status: "SUCCESS" 
+    // Money donation count
+    const donationCount = await Payment.countDocuments({
+      donorId: donor._id,
+      status: "SUCCESS",
     });
 
-    // Get unique campaigns donated to
-    const donations = await Payment.find({ 
-      donorId: donor._id, 
-      status: "SUCCESS" 
+    // Unique NGOs donated to
+    const uniqueNgos = await Payment.find({
+      donorId: donor._id,
+      status: "SUCCESS",
     }).distinct("ngoId");
+
+    // Volunteer (time) stats
+    const volunteerApplications = await Volunteer.find({
+      donorId: donor._id,
+      campaignId: { $ne: null },
+    });
+    const volunteerCount = volunteerApplications.length;
+    const totalHoursCommitted = volunteerApplications.reduce(
+      (sum, v) => sum + (v.hoursCommitted || 0),
+      0
+    );
+    const totalHoursCompleted = volunteerApplications.reduce(
+      (sum, v) => sum + (v.hoursCompleted || 0),
+      0
+    );
 
     const stats = {
       totalDonated: donor.totalDonated,
-      donationCount: donationCount,
-      campaignsSupported: donations.length,
+      donationCount,
+      campaignsSupported: uniqueNgos.length,
+      volunteerCount,
+      totalHoursCommitted,
+      totalHoursCompleted,
       registrationDate: donor.registrationDate,
       approved: donor.approved,
     };
@@ -179,7 +198,7 @@ const getDonorStats = async (req, res) => {
   }
 };
 
-// @desc    Get my donation history
+// @desc    Get my donation history (money + time)
 // @route   GET /api/donors/me/donations
 // @access  Private (Donor)
 const getMyDonations = async (req, res) => {
@@ -189,14 +208,41 @@ const getMyDonations = async (req, res) => {
       return res.status(404).json({ success: false, message: "Donor not found" });
     }
 
-    const donations = await Payment.find({ donorId: donor._id })
-      .populate("ngoId", "name email")
-      .sort({ timestamp: -1 });
+    // Money donations
+    const payments = await Payment.find({ donorId: donor._id })
+      .populate("ngoId", "organizationName email")
+      .lean();
 
-    res.status(200).json({ 
-      success: true, 
-      count: donations.length, 
-      data: donations 
+    const moneyItems = payments.map(p => ({
+      ...p,
+      type: "money",
+      timestamp: p.timestamp || p.createdAt || p._id.getTimestamp(),
+    }));
+
+    // Time donations (volunteer applications for campaigns)
+    const volunteers = await Volunteer.find({
+      donorId: donor._id,
+      campaignId: { $ne: null },
+    })
+      .populate("ngoId", "organizationName email")
+      .populate("campaignId", "description")
+      .lean();
+
+    const timeItems = volunteers.map(v => ({
+      ...v,
+      type: "time",
+      timestamp: v.applicationDate,
+    }));
+
+    // Merge and sort by timestamp descending
+    const all = [...moneyItems, ...timeItems].sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    res.status(200).json({
+      success: true,
+      count: all.length,
+      data: all,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

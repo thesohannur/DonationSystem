@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { donorService } from '../../services/donorService';
 import { formatDate, formatCurrency } from '../../utils/helpers';
 import './DonorProfile.css';
-import { Calendar, Calendar1Icon, CalendarX2, HeartHandshake, HeartHandshakeIcon, Wallet } from 'lucide-react';
+import { Calendar, Clock, HeartHandshakeIcon, Wallet } from 'lucide-react';
 
 const DonorProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -67,10 +67,8 @@ const DonorProfile = () => {
       setSuccess('Profile updated successfully!');
       setEditing(false);
       
-      // Refresh profile data
       await fetchProfile();
       
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
       
     } catch (err) {
@@ -266,7 +264,7 @@ const DonorProfile = () => {
           <h2>Your Impact</h2>
           
           <div className="stats-cards">
-            <div className="impact-card">
+            <div className="impact-card impact-card--money">
                <Wallet className="stat-icon icon-gold" size={48} />
               <div className="impact-content">
                 <h3>Total Donated</h3>
@@ -274,7 +272,7 @@ const DonorProfile = () => {
               </div>
             </div>
 
-            <div className="impact-card">
+            <div className="impact-card impact-card--donations">
                <HeartHandshakeIcon className="stat-icon icon-red" size={48} />
               <div className="impact-content">
                 <h3>Total Donations</h3>
@@ -282,11 +280,22 @@ const DonorProfile = () => {
               </div>
             </div>
 
-            <div className="impact-card">
+            <div className="impact-card impact-card--campaigns">
                 <Calendar className="stat-icon icon-pink" size={48} />
               <div className="impact-content">
                 <h3>Campaigns Supported</h3>
                 <p className="impact-value">{stats?.campaignsSupported || 0}</p>
+              </div>
+            </div>
+
+            <div className="impact-card impact-card--time">
+              <Clock className="stat-icon icon-teal" size={48} />
+              <div className="impact-content">
+                <h3>Hours Volunteered</h3>
+                <p className="impact-value">
+                  {stats?.totalHoursCommitted || 0}
+                  <span className="impact-unit"> hrs</span>
+                </p>
               </div>
             </div>
           </div>
@@ -299,8 +308,8 @@ const DonorProfile = () => {
             </div>
             <div className="account-detail">
               <span>Account Status:</span>
-              <span className={`detail-value ${profile?.userId?.approved ? 'active' : 'inactive'}`}>
-                {profile?.userId?.approved ? 'Active' : 'Not Approved'}
+              <span className={`detail-value ${profile?.approved ? 'active' : 'inactive'}`}>
+                 {profile?.approved ? '✓ Approved' : '⏳ Pending Approval'}
               </span>
             </div>
           </div>

@@ -9,8 +9,12 @@ const {
   createVolunteer,
   updateVolunteerStatus,
   deleteVolunteer,
+  createTimeDonation,
 } = require("../controllers/volunteerController");
 const { protect, authorize } = require("../middleware/auth");
+
+// POST /api/volunteers/time-donate - Donate time to a campaign (Donor only)
+router.post("/time-donate", protect, authorize("DONOR"), createTimeDonation);
 
 // GET /api/volunteers - Get all volunteers (Admin only)
 router.get("/", protect, authorize("ADMIN"), getAllVolunteers);

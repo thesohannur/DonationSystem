@@ -263,6 +263,34 @@
   transform: translateX(4px);
 }
 
+.impact-card--money {
+  border-left: 4px solid #667eea;
+  background: linear-gradient(135deg, #f5f6ff 0%, #ebe8ff 100%);
+}
+
+.impact-card--donations {
+  border-left: 4px solid #f5576c;
+  background: linear-gradient(135deg, #fff5f6 0%, #ffe8ec 100%);
+}
+
+.impact-card--campaigns {
+  border-left: 4px solid #e91e8c;
+  background: linear-gradient(135deg, #fff5fb 0%, #ffe8f5 100%);
+}
+
+.impact-card--time {
+  border-left: 4px solid #11998e;
+  background: linear-gradient(135deg, #f0fffe 0%, #e6fff8 100%);
+}
+
+.icon-teal { color: #11998e; }
+
+.impact-unit {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6c757d;
+}
+
 .impact-icon {
   font-size: 2.5rem;
 }

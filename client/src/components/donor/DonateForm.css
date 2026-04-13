@@ -112,6 +112,70 @@
   color: #0c5460;
 }
 
+/* Donation Type Tabs */
+.donation-type-tabs {
+  display: flex;
+  gap: 0;
+  background: #f1f3f5;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.donation-tab {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border: none;
+  background: transparent;
+  border-radius: 9px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.donation-tab:hover:not(.active) {
+  color: #495057;
+  background: rgba(255,255,255,0.6);
+}
+
+.donation-tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35);
+}
+
+/* Volunteer form extras */
+.volunteer-textarea {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.volunteer-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.volunteer-textarea:disabled {
+  background-color: #f1f3f5;
+  cursor: not-allowed;
+}
+
+.optional-label {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #adb5bd;
+}
+
 /* Donation Form Section */
 .donation-form-section {
   background: white;

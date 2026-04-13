@@ -1,5 +1,8 @@
 const Volunteer = require("../models/Volunteer");
 const VolunteerOpportunity = require("../models/VolunteerOpportunity");
+const Donor = require("../models/Donor");
+const NGO = require("../models/NGO");
+const Campaign = require("../models/Campaign");
 
 // @desc    Get all volunteer applications
 // @route   GET /api/volunteers
@@ -133,6 +136,69 @@ const deleteVolunteer = async (req, res) => {
   }
 };
 
+// @desc    Donate time to a campaign (auto-resolves donor & NGO from auth + campaign)
+// @route   POST /api/volunteers/time-donate
+// @access  Private (Donor only)
+const createTimeDonation = async (req, res) => {
+  try {
+    const { campaignId, hoursCommitted, donorMessage } = req.body;
+
+    if (!campaignId) {
+      return res.status(400).json({ success: false, message: "campaignId is required" });
+    }
+    if (!hoursCommitted || hoursCommitted <= 0) {
+      return res.status(400).json({ success: false, message: "Please provide valid hours to commit" });
+    }
+
+    // Resolve donor from authenticated user
+    const donor = await Donor.findOne({ userId: req.user._id });
+    if (!donor) {
+      return res.status(404).json({ success: false, message: "Donor profile not found" });
+    }
+    if (!donor.approved) {
+      return res.status(403).json({ success: false, message: "Your donor account is pending approval" });
+    }
+
+    // Validate campaign
+    const campaign = await Campaign.findById(campaignId);
+    if (!campaign) {
+      return res.status(404).json({ success: false, message: "Campaign not found" });
+    }
+    if (!campaign.approved) {
+      return res.status(400).json({ success: false, message: "Campaign is not approved" });
+    }
+    if (new Date() > campaign.expirationTime) {
+      return res.status(400).json({ success: false, message: "Campaign has expired" });
+    }
+    if (!campaign.acceptsTime) {
+      return res.status(400).json({ success: false, message: "Campaign does not accept time donations" });
+    }
+
+    // Resolve NGO
+    const ngo = await NGO.findOne({ email: campaign.ngoEmail });
+    if (!ngo) {
+      return res.status(404).json({ success: false, message: "NGO not found" });
+    }
+
+    const volunteer = await Volunteer.create({
+      donorId: donor._id,
+      ngoId: ngo._id,
+      campaignId,
+      hoursCommitted,
+      donorMessage: donorMessage || "",
+      status: "PENDING",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Volunteer application submitted successfully",
+      data: volunteer,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getAllVolunteers,
   getVolunteer,
@@ -142,4 +208,5 @@ module.exports = {
   createVolunteer,
   updateVolunteerStatus,
   deleteVolunteer,
+  createTimeDonation,
 };
