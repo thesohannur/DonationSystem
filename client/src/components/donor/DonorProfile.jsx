@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { donorService } from '../../services/donorService';
 import { formatDate, formatCurrency } from '../../utils/helpers';
 import './DonorProfile.css';
@@ -15,8 +15,10 @@ const DonorProfile = () => {
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [pictureLoading, setPictureLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchProfile();
@@ -89,6 +91,104 @@ const DonorProfile = () => {
     setError('');
   };
 
+  const handlePickImage = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Failed to read image file'));
+    reader.readAsDataURL(file);
+  });
+
+  const compressImageToDataUrl = async (file) => {
+    const sourceDataUrl = await fileToDataUrl(file);
+
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxSide = 900;
+        const ratio = Math.min(maxSide / img.width, maxSide / img.height, 1);
+        const width = Math.max(1, Math.round(img.width * ratio));
+        const height = Math.max(1, Math.round(img.height * ratio));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Failed to process image'));
+          return;
+        }
+
+        // White background helps with transparent PNGs converted to JPEG.
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressed = canvas.toDataURL('image/jpeg', 0.8);
+        resolve(compressed);
+      };
+      img.onerror = () => reject(new Error('Failed to process image'));
+      img.src = sourceDataUrl;
+    });
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please select a valid image file');
+      e.target.value = '';
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size must be less than 5MB');
+      e.target.value = '';
+      return;
+    }
+
+    try {
+      setPictureLoading(true);
+      setError('');
+      setSuccess('');
+
+      const imageBase64 = await compressImageToDataUrl(file);
+
+      await donorService.uploadProfilePicture(imageBase64);
+      await fetchProfile();
+      setSuccess('Profile picture updated successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to upload profile picture. Try a smaller image.');
+    } finally {
+      setPictureLoading(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemovePicture = async () => {
+    try {
+      setPictureLoading(true);
+      setError('');
+      setSuccess('');
+      await donorService.removeProfilePicture();
+      await fetchProfile();
+      setSuccess('Profile picture removed successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to remove profile picture');
+    } finally {
+      setPictureLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="profile-container">
@@ -126,6 +226,59 @@ const DonorProfile = () => {
         {/* Profile Information */}
         <div className="profile-section">
           <h2>Personal Information</h2>
+
+          <div className="profile-visual-card">
+            <div className="profile-picture-card">
+              <div className="profile-picture-preview">
+                {profile?.profileImageUrl ? (
+                  <img src={profile.profileImageUrl} alt="Profile" className="profile-picture-image" />
+                ) : (
+                  <div className="profile-picture-fallback">
+                    {(profile?.firstName?.[0] || 'D').toUpperCase()}
+                    {(profile?.lastName?.[0] || '').toUpperCase()}
+                  </div>
+                )}
+              </div>
+
+              <div className="profile-picture-copy">
+                <span className="profile-picture-label">Profile Picture</span>
+                <h3>{profile?.firstName} {profile?.lastName}</h3>
+                <p>
+                  {profile?.profileImageUrl
+                    ? 'Your profile photo is live on your account.'
+                    : 'Add a photo to make your profile feel complete and professional.'}
+                </p>
+
+                <div className="profile-picture-actions">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="profile-picture-input"
+                    onChange={handleFileChange}
+                  />
+                  <button
+                    type="button"
+                    className="picture-btn picture-btn-primary"
+                    onClick={handlePickImage}
+                    disabled={pictureLoading}
+                  >
+                    {pictureLoading ? 'Uploading...' : profile?.profileImageUrl ? 'Change Photo' : 'Add Photo'}
+                  </button>
+                  {profile?.profileImageUrl && (
+                    <button
+                      type="button"
+                      className="picture-btn picture-btn-danger"
+                      onClick={handleRemovePicture}
+                      disabled={pictureLoading}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
           
           {!editing ? (
             <div className="info-card">

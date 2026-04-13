@@ -5,6 +5,14 @@ import '../styles/HeroSection.css';
 const HeroSection = () => {
   const navigate = useNavigate();
 
+  const scrollToSection = (selector, offset = 90) => {
+    const element = document.querySelector(selector);
+    if (!element) return;
+
+    const top = element.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
+  };
+
   return (
     <section className="hero-section">
       <div className="hero-content">
@@ -18,13 +26,13 @@ const HeroSection = () => {
         <div className="hero-cta-buttons">
           <button 
             className="btn btn-primary"
-            onClick={() => navigate('/auth/register')}
+            onClick={() => scrollToSection('.roles-section', -40)}
           >
             Get Started Now
           </button>
           <button 
             className="btn btn-secondary"
-            onClick={() => document.querySelector('.features-section')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => scrollToSection('.features-section', -90)}
           >
             Learn More
           </button>

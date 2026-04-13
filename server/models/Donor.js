@@ -28,6 +28,14 @@ const donorSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  profileImageUrl: {
+    type: String,
+    default: "",
+  },
+  profileImagePublicId: {
+    type: String,
+    default: "",
+  },
   totalDonated: {
     type: Number,
     default: 0,

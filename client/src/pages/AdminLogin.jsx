@@ -6,6 +6,11 @@ const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
 
 export default function AdminLogin() {
     const navigate = useNavigate();
+    const authTabs = [
+        { key: 'donor', label: 'Donor Login', path: '/donor/login' },
+        { key: 'ngo', label: 'NGO Login', path: '/ngo/login' },
+        { key: 'admin', label: 'Admin Login', path: '/admin/login' }
+    ];
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -128,6 +133,40 @@ export default function AdminLogin() {
 
                 {/* Form Section */}
                 <form onSubmit={handleSubmit} style={{ padding: '40px 30px' }}>
+                    <div style={{
+                        display: 'flex',
+                        gap: '8px',
+                        padding: '6px',
+                        marginBottom: '24px',
+                        background: '#f3f4f6',
+                        borderRadius: '14px'
+                    }}>
+                        {authTabs.map((tab) => {
+                            const active = tab.key === 'admin';
+                            return (
+                                <button
+                                    key={tab.key}
+                                    type="button"
+                                    onClick={() => navigate(tab.path)}
+                                    style={{
+                                        flex: 1,
+                                        padding: '10px 12px',
+                                        border: 'none',
+                                        borderRadius: '10px',
+                                        background: active ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'transparent',
+                                        color: active ? 'white' : '#6b7280',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        cursor: 'pointer',
+                                        boxShadow: active ? '0 8px 20px rgba(102, 126, 234, 0.25)' : 'none'
+                                    }}
+                                >
+                                    {tab.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+
                     {error && (
                         <div style={{
                             background: '#fee2e2',
@@ -289,6 +328,29 @@ export default function AdminLogin() {
                         marginTop: '24px',
                         textAlign: 'center'
                     }}>
+                        {/* <p style={{
+                            color: '#6b7280',
+                            fontSize: '14px',
+                            margin: '0 0 12px 0'
+                        }}>
+                            Need a different role?{' '}
+                            <button
+                                type="button"
+                                onClick={() => navigate('/auth/login')}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#667eea',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    textDecoration: 'underline',
+                                    padding: 0
+                                }}
+                            >
+                                Switch login
+                            </button>
+                        </p> */}
                         <p style={{
                             color: '#6b7280',
                             fontSize: '14px',

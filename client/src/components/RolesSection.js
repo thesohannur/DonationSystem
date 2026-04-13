@@ -9,6 +9,8 @@ const RolesSection = () => {
   const roles = {
     donor: {
       title: '💚 DONOR',
+      label: 'Donor',
+      loginPath: '/donor/login',
       description: 'Make a Difference',
       features: [
         'Browse active campaigns',
@@ -22,6 +24,8 @@ const RolesSection = () => {
     },
     ngo: {
       title: '🏢 NGO',
+      label: 'NGO',
+      loginPath: '/ngo/login',
       description: 'Create Impact',
       features: [
         'Create fundraising campaigns',
@@ -35,6 +39,8 @@ const RolesSection = () => {
     },
     admin: {
       title: '👑 ADMIN',
+      label: 'Admin',
+      loginPath: '/admin/login',
       description: 'Oversee Everything',
       features: [
         'Verify NGO registrations',
@@ -62,7 +68,7 @@ const RolesSection = () => {
               onClick={() => setActiveRole(key)}
               style={activeRole === key ? { borderBottomColor: role.color } : {}}
             >
-              {role.title.split(' ')[0]} {role.title.split(' ')[1]}
+              {role.label}
             </button>
           ))}
         </div>
@@ -86,10 +92,10 @@ const RolesSection = () => {
 
             <button
               className="btn btn-primary role-cta"
-              onClick={() => navigate('/auth/register')}
+              onClick={() => navigate(roles[activeRole].loginPath)}
               style={{ backgroundColor: roles[activeRole].color }}
             >
-              Get Started as {roles[activeRole].title.split(' ')[1]}
+              Get Started as {roles[activeRole].label}
             </button>
           </div>
         </div>
