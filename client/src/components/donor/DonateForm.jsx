@@ -140,6 +140,14 @@ const DonateForm = () => {
         <div className="campaign-details-section">
           <h2>Campaign Details</h2>
           <div className="detail-card">
+            <div className="campaign-detail-image-wrap">
+              {campaign.imageUrl ? (
+                <img src={campaign.imageUrl} alt="Campaign" className="campaign-detail-image" />
+              ) : (
+                <div className="campaign-detail-image-placeholder">📷 No campaign image</div>
+              )}
+            </div>
+
             <h3 className="campaign-description">{campaign.description}</h3>
 
             <div className="detail-item">
@@ -314,6 +322,10 @@ const DonateForm = () => {
                     <span className="summary-amount">Pending Approval</span>
                   </div>
                 </div>
+
+                <div className="time-donation-note">
+                  You will be contacted by {campaign.ngoEmail} using your donor profile contact details.
+                </div>
               </>
             )}
 
@@ -341,7 +353,7 @@ const DonateForm = () => {
             <span>
               {donationType === 'money'
                 ? 'Your donation is secure and will be processed immediately'
-                : 'Your application will be reviewed by the NGO'}
+                : `Your application will be reviewed and ${campaign.ngoEmail} will contact you if approved`}
             </span>
           </div>
         </div>

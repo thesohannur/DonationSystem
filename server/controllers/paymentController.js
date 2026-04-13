@@ -236,6 +236,10 @@ const createDonation = async (req, res) => {
     donor.totalDonated += amount;
     await donor.save({ session });
 
+    // Update NGO's total received
+    ngo.totalReceived += amount;
+    await ngo.save({ session });
+
     // Update campaign amount and add payment to donations array
     campaign.amount += amount;
     campaign.donations.push(payment[0]._id);

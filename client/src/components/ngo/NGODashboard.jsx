@@ -672,6 +672,7 @@ const NGODashboard = () => {
                   <div>
                     <h3>{volunteer.donorId ? `${volunteer.donorId.firstName} ${volunteer.donorId.lastName}` : 'Volunteer'}</h3>
                     <p>{volunteer.donorId?.email || ''}</p>
+                    <p>{volunteer.donorId?.phoneNumber || 'No phone provided'}</p>
                     <p className="muted">{volunteer.campaignId?.description || 'Campaign volunteer request'}</p>
                   </div>
                   <div className="ngo-volunteer-meta">

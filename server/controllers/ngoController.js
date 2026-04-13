@@ -191,6 +191,11 @@ const getMyStats = async (req, res) => {
     const donations = await Payment.find({ ngoId: ngo._id, status: "SUCCESS" }).lean();
     const volunteerApplications = await Volunteer.find({ ngoId: ngo._id, campaignId: { $ne: null } }).lean();
 
+    const computedTotalReceived = donations.reduce(
+      (sum, donation) => sum + (Number(donation.amount) || 0),
+      0
+    );
+
     const totalVolunteerHours = volunteerApplications.reduce(
       (sum, item) => sum + (item.hoursCommitted || 0),
       0
@@ -202,7 +207,7 @@ const getMyStats = async (req, res) => {
         organizationName: ngo.organizationName,
         email: ngo.email,
         isVerified: ngo.isVerified,
-        totalReceived: ngo.totalReceived,
+        totalReceived: computedTotalReceived || ngo.totalReceived || 0,
         campaignCount: campaigns.length,
         approvedCampaigns: campaigns.filter((item) => item.approved).length,
         pendingCampaigns: campaigns.filter((item) => !item.approved).length,
@@ -269,7 +274,7 @@ const getMyVolunteers = async (req, res) => {
     }
 
     const volunteers = await Volunteer.find({ ngoId: ngo._id, campaignId: { $ne: null } })
-      .populate("donorId", "firstName lastName email")
+      .populate("donorId", "firstName lastName email phoneNumber")
       .populate("campaignId", "description expirationTime acceptsMoney acceptsTime")
       .sort({ applicationDate: -1 })
       .lean();
