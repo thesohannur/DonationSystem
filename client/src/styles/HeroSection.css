@@ -89,6 +89,10 @@
   display: flex;
   gap: 20px;
   justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   margin-bottom: 60px;
   animation: slideInUp 0.8s ease-out 0.4s both;
   flex-wrap: wrap;
@@ -121,6 +125,8 @@
   justify-content: center;
   flex-wrap: wrap;
   margin-top: 40px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .floating-card {

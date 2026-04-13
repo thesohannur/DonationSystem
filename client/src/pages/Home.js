@@ -14,11 +14,11 @@ const Home = () => {
   return (
     <div className="home">
       <HeroSection />
-      <StatsSection />
+      {/* <StatsSection /> */}
       <FeaturesSection />
       <RolesSection />
-      <TestimonialsSection />
-      <CTASection />
+      {/* <TestimonialsSection />
+      <CTASection /> */}
     </div>
   );
 };
