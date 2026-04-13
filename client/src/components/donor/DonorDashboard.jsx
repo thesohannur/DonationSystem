@@ -71,17 +71,34 @@ const DonorDashboard = () => {
           <div className="shape shape-3" />
         </div>
         <div className="hero-content">
-          <div>
+          <div className="hero-copy">
             <p className="hero-greeting">Welcome back</p>
             <h1 className="hero-name">{profile?.firstName} {profile?.lastName}</h1>
             <p className="hero-sub">Thank you for making a difference</p>
           </div>
-          {!stats?.approved && (
-            <div className="approval-notice">
-              <Hourglass size={16} />
-              <span>Account pending approval</span>
+          <div className="hero-profile-card">
+            <div className="hero-avatar-ring">
+              {profile?.profileImageUrl ? (
+                <img src={profile.profileImageUrl} alt="Profile" className="hero-avatar-image" />
+              ) : (
+                <div className="hero-avatar-fallback">
+                  {(profile?.firstName?.[0] || 'D').toUpperCase()}
+                  {(profile?.lastName?.[0] || '').toUpperCase()}
+                </div>
+              )}
             </div>
-          )}
+            <div className="hero-profile-meta">
+              <span className="hero-profile-label">Donor Profile</span>
+              <strong className="hero-profile-name">{profile?.firstName} {profile?.lastName}</strong>
+              <span className="hero-profile-email">{profile?.userId?.email || profile?.email || 'No email available'}</span>
+              {!stats?.approved && (
+                <div className="approval-notice hero-approval-notice">
+                  <Hourglass size={16} />
+                  <span>Account pending approval</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

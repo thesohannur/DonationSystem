@@ -13,6 +13,16 @@ export const donorService = {
     return response.data;
   },
 
+  uploadProfilePicture: async (imageBase64) => {
+    const response = await api.patch('/donors/me/profile-picture', { image: imageBase64 });
+    return response.data;
+  },
+
+  removeProfilePicture: async () => {
+    const response = await api.delete('/donors/me/profile-picture');
+    return response.data;
+  },
+
   // Get donor statistics
   getMyStats: async () => {
     const response = await api.get('/donors/me/stats');
