@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 
 const emptyCampaignForm = {
+  name: '',
   description: '',
   targetAmount: '',
   expirationTime: '',
@@ -82,6 +83,7 @@ const NGODashboard = () => {
   const [volunteers, setVolunteers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [campaignError, setCampaignError] = useState('');
   const [success, setSuccess] = useState('');
   const [profileForm, setProfileForm] = useState(emptyProfileForm);
   const [campaignForm, setCampaignForm] = useState(emptyCampaignForm);
@@ -144,6 +146,19 @@ const NGODashboard = () => {
     { label: 'Verified', value: stats?.isVerified ? 'Yes' : 'Pending', icon: BadgeCheck, tone: 'senary' },
   ]), [stats]);
 
+  const isNgoVerified = Boolean(profile?.isVerified || stats?.isVerified);
+  const minimumExpiration = useMemo(() => {
+    const now = new Date();
+    now.setSeconds(0, 0);
+    return now.toISOString().slice(0, 16);
+  }, []);
+
+  useEffect(() => {
+    if (!isNgoVerified && (activeTab === 'campaigns' || activeTab === 'donations' || activeTab === 'volunteers')) {
+      setActiveTab('overview');
+    }
+  }, [isNgoVerified, activeTab]);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
@@ -153,6 +168,7 @@ const NGODashboard = () => {
   const resetCampaignForm = () => {
     setCampaignForm(emptyCampaignForm);
     setEditingCampaignId(null);
+    setCampaignError('');
   };
 
   const handleCampaignImagePick = () => {
@@ -168,18 +184,18 @@ const NGODashboard = () => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      setError('Please choose a valid campaign image');
+      setCampaignError('Please choose a valid campaign image');
       event.target.value = '';
       return;
     }
 
     try {
       setCampaignImageLoading(true);
-      setError('');
+      setCampaignError('');
       const compressed = await compressImageToDataUrl(file);
       setCampaignForm((prev) => ({ ...prev, imageDataUrl: compressed }));
     } catch (err) {
-      setError(err.message || 'Failed to process campaign image');
+      setCampaignError(err.message || 'Failed to process campaign image');
     } finally {
       setCampaignImageLoading(false);
       event.target.value = '';
@@ -234,13 +250,35 @@ const NGODashboard = () => {
 
     try {
       setCampaignSubmitting(true);
-      setError('');
+      setCampaignError('');
       setSuccess('');
 
+      if (!campaignForm.acceptsMoney && !campaignForm.acceptsTime) {
+        setCampaignError('Please choose at least one option: Accept money or Accept time.');
+        setCampaignSubmitting(false);
+        return;
+      }
+
+      if (!campaignForm.expirationTime) {
+        setCampaignError('Expiration date is required.');
+        setCampaignSubmitting(false);
+        return;
+      }
+
+      const expirationDate = new Date(campaignForm.expirationTime);
+      if (Number.isNaN(expirationDate.getTime()) || expirationDate <= new Date()) {
+        setCampaignError('Expiration date must be in the future.');
+        setCampaignSubmitting(false);
+        return;
+      }
+
       const payload = {
+        name: campaignForm.name,
         description: campaignForm.description,
-        targetAmount: campaignForm.targetAmount ? Number(campaignForm.targetAmount) : null,
-        expirationTime: campaignForm.expirationTime || null,
+        targetAmount: campaignForm.acceptsMoney && campaignForm.targetAmount
+          ? Number(campaignForm.targetAmount)
+          : null,
+        expirationTime: campaignForm.expirationTime,
         acceptsMoney: campaignForm.acceptsMoney,
         acceptsTime: campaignForm.acceptsTime,
       };
@@ -262,7 +300,7 @@ const NGODashboard = () => {
       setActiveTab('campaigns');
       window.setTimeout(() => setSuccess(''), 2500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save campaign');
+      setCampaignError(err.response?.data?.message || 'Failed to save campaign');
     } finally {
       setCampaignSubmitting(false);
     }
@@ -270,7 +308,9 @@ const NGODashboard = () => {
 
   const handleEditCampaign = (campaign) => {
     setEditingCampaignId(campaign._id);
+    setCampaignError('');
     setCampaignForm({
+      name: campaign.name || '',
       description: campaign.description || '',
       targetAmount: campaign.targetAmount || '',
       expirationTime: campaign.expirationTime ? new Date(campaign.expirationTime).toISOString().slice(0, 16) : '',
@@ -294,6 +334,21 @@ const NGODashboard = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete campaign');
     }
+  };
+
+  const handleAcceptMoneyToggle = (checked) => {
+    setCampaignForm((prev) => ({
+      ...prev,
+      acceptsMoney: checked,
+      targetAmount: checked ? prev.targetAmount : '',
+    }));
+  };
+
+  const handleAcceptTimeToggle = (checked) => {
+    setCampaignForm((prev) => ({
+      ...prev,
+      acceptsTime: checked,
+    }));
   };
 
   const handleVolunteerStatus = async (volunteerId, status, hoursCompleted = null) => {
@@ -369,7 +424,12 @@ const NGODashboard = () => {
             Manage campaigns, track donations, review volunteer applications, and keep your organization profile polished.
           </p>
           <div className="ngo-hero-actions">
-            <button className="primary-btn" onClick={() => setActiveTab('campaigns')}>
+            <button
+              className="primary-btn"
+              onClick={() => setActiveTab('campaigns')}
+              disabled={!isNgoVerified}
+              title={!isNgoVerified ? 'Campaigns unlock after NGO verification' : ''}
+            >
               <Plus size={16} /> Create Campaign
             </button>
             <button className="secondary-btn" onClick={handleLogout}>
@@ -415,12 +475,15 @@ const NGODashboard = () => {
       <nav className="ngo-tab-bar">
         {tabItems.map((tab) => {
           const Icon = tab.icon;
+          const isLocked = !isNgoVerified && (tab.key === 'campaigns' || tab.key === 'donations' || tab.key === 'volunteers');
           return (
             <button
               key={tab.key}
               type="button"
-              className={`ngo-tab-button ${activeTab === tab.key ? 'active' : ''}`}
+              className={`ngo-tab-button ${activeTab === tab.key ? 'active' : ''} ${isLocked ? 'locked' : ''}`}
               onClick={() => setActiveTab(tab.key)}
+              disabled={isLocked}
+              title={isLocked ? 'Locked until NGO is verified' : ''}
             >
               <Icon size={18} />
               <span>{tab.label}</span>
@@ -435,14 +498,21 @@ const NGODashboard = () => {
             <section className="ngo-panel">
               <div className="ngo-panel-header">
                 <h2>Recent Campaigns</h2>
-                <button className="text-link" onClick={() => setActiveTab('campaigns')}>View all</button>
+                <button
+                  className="text-link"
+                  onClick={() => setActiveTab('campaigns')}
+                  disabled={!isNgoVerified}
+                  title={!isNgoVerified ? 'Locked until NGO is verified' : ''}
+                >
+                  View all
+                </button>
               </div>
 
               <div className="ngo-card-list">
                 {campaigns.slice(0, 3).map((campaign) => (
                   <article key={campaign._id} className="ngo-mini-card">
                     <div className="ngo-mini-card-main">
-                      <h3>{campaign.description}</h3>
+                      <h3>{campaign.name || campaign.description}</h3>
                       <div className="ngo-mini-badges">
                         <span className={`status-pill ${statusClass(campaign)}`}>{statusLabel(campaign)}</span>
                         <span className="status-pill light">Money: {campaign.acceptsMoney ? 'Yes' : 'No'}</span>
@@ -462,7 +532,14 @@ const NGODashboard = () => {
             <section className="ngo-panel">
               <div className="ngo-panel-header">
                 <h2>Recent Donations</h2>
-                <button className="text-link" onClick={() => setActiveTab('donations')}>View all</button>
+                <button
+                  className="text-link"
+                  onClick={() => setActiveTab('donations')}
+                  disabled={!isNgoVerified}
+                  title={!isNgoVerified ? 'Locked until NGO is verified' : ''}
+                >
+                  View all
+                </button>
               </div>
 
               <div className="ngo-table-wrap">
@@ -479,7 +556,7 @@ const NGODashboard = () => {
                       <tr key={donation._id}>
                         <td>{donation.donorId ? `${donation.donorId.firstName} ${donation.donorId.lastName}` : 'N/A'}</td>
                         <td>{formatCurrency(donation.amount || 0)}</td>
-                        <td>{donation.campaignId?.description || 'General support'}</td>
+                        <td>{donation.campaignId?.name || donation.campaignId?.description || 'General support'}</td>
                       </tr>
                     ))}
                     {donations.length === 0 && (
@@ -487,6 +564,47 @@ const NGODashboard = () => {
                     )}
                   </tbody>
                 </table>
+              </div>
+            </section>
+
+            <section className="ngo-panel">
+              <div className="ngo-panel-header">
+                <h2>Recent Volunteers</h2>
+                <button
+                  className="text-link"
+                  onClick={() => setActiveTab('volunteers')}
+                  disabled={!isNgoVerified}
+                  title={!isNgoVerified ? 'Locked until NGO is verified' : ''}
+                >
+                  View all
+                </button>
+              </div>
+
+              <div className="ngo-card-list">
+                {volunteers.slice(0, 3).map((volunteer) => (
+                  <article key={volunteer._id} className="ngo-mini-card">
+                    <div className="ngo-mini-card-main">
+                      <h3>
+                        {volunteer.donorId
+                          ? `${volunteer.donorId.firstName} ${volunteer.donorId.lastName}`
+                          : 'Volunteer'}
+                      </h3>
+                      <div className="ngo-mini-badges">
+                        <span className="status-pill light">
+                          {volunteer.campaignId?.name || volunteer.campaignId?.description || 'Volunteer request'}
+                        </span>
+                        <span className={`status-pill ${volunteer.status === 'APPROVED' ? 'status-approved' : volunteer.status === 'REJECTED' ? 'status-rejected' : volunteer.status === 'COMPLETED' ? 'status-review' : 'status-pending'}`}>
+                          {volunteer.status}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="ngo-mini-card-side">
+                      <strong>{volunteer.hoursCommitted || 0} hrs</strong>
+                      <span>{formatDateTime(volunteer.applicationDate)}</span>
+                    </div>
+                  </article>
+                ))}
+                {volunteers.length === 0 && <div className="empty-state-inline">No volunteer applications yet.</div>}
               </div>
             </section>
           </>
@@ -517,7 +635,7 @@ const NGODashboard = () => {
                       <span className={`status-pill ${statusClass(campaign)}`}>{statusLabel(campaign)}</span>
                     </div>
                     <div className="ngo-campaign-body">
-                      <h3>{campaign.description}</h3>
+                      <h3>{campaign.name || campaign.description}</h3>
                       <div className="ngo-campaign-meta">
                         <span>{formatCurrency(campaign.amount || 0)}</span>
                         <span>{campaign.expirationTime ? formatDate(campaign.expirationTime) : 'No expiry'}</span>
@@ -555,6 +673,16 @@ const NGODashboard = () => {
                 <input ref={campaignImageInputRef} type="file" accept="image/*" className="hidden-input" onChange={handleCampaignImageChange} />
 
                 <label className="ngo-field">
+                  <span>Campaign Name</span>
+                  <input
+                    value={campaignForm.name}
+                    onChange={(e) => setCampaignForm((prev) => ({ ...prev, name: e.target.value }))}
+                    placeholder="e.g. Flood Relief 2026"
+                    required
+                  />
+                </label>
+
+                <label className="ngo-field">
                   <span>Description</span>
                   <textarea
                     value={campaignForm.description}
@@ -574,13 +702,16 @@ const NGODashboard = () => {
                       step="1"
                       value={campaignForm.targetAmount}
                       onChange={(e) => setCampaignForm((prev) => ({ ...prev, targetAmount: e.target.value }))}
-                      placeholder="Optional"
+                      placeholder={campaignForm.acceptsMoney ? 'Optional' : 'Enable Accept money first'}
+                      disabled={!campaignForm.acceptsMoney}
                     />
                   </label>
                   <label className="ngo-field">
                     <span>Expiration</span>
                     <input
                       type="datetime-local"
+                      min={minimumExpiration}
+                      required
                       value={campaignForm.expirationTime}
                       onChange={(e) => setCampaignForm((prev) => ({ ...prev, expirationTime: e.target.value }))}
                     />
@@ -592,7 +723,7 @@ const NGODashboard = () => {
                     <input
                       type="checkbox"
                       checked={campaignForm.acceptsMoney}
-                      onChange={(e) => setCampaignForm((prev) => ({ ...prev, acceptsMoney: e.target.checked }))}
+                      onChange={(e) => handleAcceptMoneyToggle(e.target.checked)}
                     />
                     <span>Accept money</span>
                   </label>
@@ -600,13 +731,14 @@ const NGODashboard = () => {
                     <input
                       type="checkbox"
                       checked={campaignForm.acceptsTime}
-                      onChange={(e) => setCampaignForm((prev) => ({ ...prev, acceptsTime: e.target.checked }))}
+                      onChange={(e) => handleAcceptTimeToggle(e.target.checked)}
                     />
                     <span>Accept time</span>
                   </label>
                 </div>
 
                 <div className="ngo-form-actions">
+                  {campaignError && <div className="ngo-form-alert ngo-form-alert-error">{campaignError}</div>}
                   <button type="submit" className="primary-btn" disabled={campaignSubmitting}>
                     {campaignSubmitting ? <RefreshCw className="spin-icon" size={16} /> : <Save size={16} />}
                     {editingCampaignId ? 'Update Campaign' : 'Create Campaign'}
@@ -642,7 +774,7 @@ const NGODashboard = () => {
                   {donations.map((donation) => (
                     <tr key={donation._id}>
                       <td>{donation.donorId ? `${donation.donorId.firstName} ${donation.donorId.lastName}` : 'N/A'}</td>
-                      <td>{donation.campaignId?.description || 'General support'}</td>
+                      <td>{donation.campaignId?.name || donation.campaignId?.description || 'General support'}</td>
                       <td>{formatCurrency(donation.amount || 0)}</td>
                       <td><span className={`status-pill ${donation.status === 'SUCCESS' ? 'status-approved' : 'status-pending'}`}>{donation.status}</span></td>
                       <td>{donation.timestamp ? formatDateTime(donation.timestamp) : 'N/A'}</td>
@@ -673,7 +805,7 @@ const NGODashboard = () => {
                     <h3>{volunteer.donorId ? `${volunteer.donorId.firstName} ${volunteer.donorId.lastName}` : 'Volunteer'}</h3>
                     <p>{volunteer.donorId?.email || ''}</p>
                     <p>{volunteer.donorId?.phoneNumber || 'No phone provided'}</p>
-                    <p className="muted">{volunteer.campaignId?.description || 'Campaign volunteer request'}</p>
+                    <p className="muted">{volunteer.campaignId?.name || volunteer.campaignId?.description || 'Campaign volunteer request'}</p>
                   </div>
                   <div className="ngo-volunteer-meta">
                     <span>{volunteer.hoursCommitted || 0} committed hrs</span>

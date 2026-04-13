@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { donorService } from '../../services/donorService';
 import './DonorLayout.css';
 import { BarChart3, Home, LogOut, Search, User2 } from "lucide-react";
 
@@ -7,6 +9,20 @@ const DonorLayout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true); 
+  const [isApproved, setIsApproved] = useState(true);
+
+  useEffect(() => {
+    const checkApproval = async () => {
+      try {
+        const profileRes = await donorService.getMyProfile();
+        setIsApproved(Boolean(profileRes.data?.approved));
+      } catch (e) {
+        setIsApproved(true);
+      }
+    };
+
+    checkApproval();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -40,23 +56,47 @@ const DonorLayout = ({ children }) => {
             <span className="nav-text">Dashboard</span>
           </Link>
 
-          <Link
-            to="/donor/campaigns"
-            className={`nav-item ${isActive('/donor/campaigns') ? 'active' : ''}`}
-            title="Browse Campaigns"
-          >
-            <Search className="nav-icon" size={24} />
-            <span className="nav-text">Browse Campaigns</span>
-          </Link>
+          {isApproved ? (
+            <Link
+              to="/donor/campaigns"
+              className={`nav-item ${isActive('/donor/campaigns') ? 'active' : ''}`}
+              title="Browse Campaigns"
+            >
+              <Search className="nav-icon" size={24} />
+              <span className="nav-text">Browse Campaigns</span>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className="nav-item nav-item-locked"
+              title="Locked until your donor account is verified"
+              disabled
+            >
+              <Search className="nav-icon" size={24} />
+              <span className="nav-text">Browse Campaigns</span>
+            </button>
+          )}
 
-          <Link
-            to="/donor/donations"
-            className={`nav-item ${isActive('/donor/donations') ? 'active' : ''}`}
-            title="Donation History"
-          >
-            <BarChart3 className="nav-icon" size={24} />
-            <span className="nav-text">Donation History</span>
-          </Link>
+          {isApproved ? (
+            <Link
+              to="/donor/donations"
+              className={`nav-item ${isActive('/donor/donations') ? 'active' : ''}`}
+              title="Donation History"
+            >
+              <BarChart3 className="nav-icon" size={24} />
+              <span className="nav-text">Donation History</span>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className="nav-item nav-item-locked"
+              title="Locked until your donor account is verified"
+              disabled
+            >
+              <BarChart3 className="nav-icon" size={24} />
+              <span className="nav-text">Donation History</span>
+            </button>
+          )}
 
           <Link
             to="/donor/profile"

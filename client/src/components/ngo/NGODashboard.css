@@ -236,6 +236,14 @@
   border-color: transparent;
 }
 
+.ngo-tab-button:disabled,
+.ngo-tab-button.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .ngo-content-grid {
   display: grid;
   gap: 18px;
@@ -488,6 +496,19 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.ngo-form-alert {
+  width: 100%;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 600;
+}
+
+.ngo-form-alert-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
 .action-btn.small {

@@ -60,6 +60,8 @@ const DonorDashboard = () => {
     </div>
   );
 
+  const isApproved = Boolean(profile?.approved || stats?.approved);
+
   return (
     <div className="dashboard-container">
 
@@ -158,15 +160,31 @@ const DonorDashboard = () => {
       {/* â”€â”€ Quick Actions â”€â”€ */}
       <div className="quick-actions-section">
         <h2 className="section-title">Quick Actions</h2>
+        {!isApproved && (
+          <div className="approval-notice" style={{ marginBottom: '12px' }}>
+            <Hourglass size={16} />
+            <span>Campaign and donation tabs are locked until your account is verified.</span>
+          </div>
+        )}
         <div className="quick-actions-grid">
-          <button className="action-btn action-btn-primary" onClick={() => navigate('/donor/campaigns')}>
+          <button
+            className="action-btn action-btn-primary"
+            onClick={() => navigate('/donor/campaigns')}
+            disabled={!isApproved}
+            title={!isApproved ? 'Locked until account verification' : ''}
+          >
             <div className="action-btn-icon"><Search size={20} /></div>
             <div className="action-btn-text">
               <span className="action-title">Browse Campaigns</span>
               <span className="action-sub">Find causes to support</span>
             </div>
           </button>
-          <button className="action-btn action-btn-secondary" onClick={() => navigate('/donor/donations')}>
+          <button
+            className="action-btn action-btn-secondary"
+            onClick={() => navigate('/donor/donations')}
+            disabled={!isApproved}
+            title={!isApproved ? 'Locked until account verification' : ''}
+          >
             <div className="action-btn-icon"><BarChart3 size={20} /></div>
             <div className="action-btn-text">
               <span className="action-title">View History</span>
@@ -221,7 +239,12 @@ const DonorDashboard = () => {
           <div className="empty-state-icon"><Gift size={50} /></div>
           <h3>No contributions yet</h3>
           <p>Start making a difference today</p>
-          <button className="empty-state-btn" onClick={() => navigate('/donor/campaigns')}>
+          <button
+            className="empty-state-btn"
+            onClick={() => navigate('/donor/campaigns')}
+            disabled={!isApproved}
+            title={!isApproved ? 'Locked until account verification' : ''}
+          >
             Browse Campaigns
           </button>
         </div>

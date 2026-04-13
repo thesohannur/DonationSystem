@@ -20,6 +20,7 @@ const DonationHistory = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isApproved, setIsApproved] = useState(true);
 
   const [typeTab, setTypeTab] = useState('all');
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -39,6 +40,16 @@ const DonationHistory = () => {
   const fetchHistory = async () => {
     try {
       setLoading(true);
+      const profileResponse = await donorService.getMyProfile();
+      const approved = Boolean(profileResponse.data?.approved);
+      setIsApproved(approved);
+
+      if (!approved) {
+        setItems([]);
+        setError('Donation tab is locked until your account is verified.');
+        return;
+      }
+
       const response = await donorService.getMyDonations();
       setItems(response.data);
       setError('');
@@ -74,6 +85,12 @@ const DonationHistory = () => {
   if (error) return (
     <div className="history-container">
       <div className="error-message">{error}</div>
+    </div>
+  );
+
+  if (!isApproved) return (
+    <div className="history-container">
+      <div className="error-message">Donation tab is locked until your account is verified.</div>
     </div>
   );
 
@@ -186,7 +203,7 @@ const DonationHistory = () => {
                     )}
                     {typeTab === 'time' && (
                       <td className="campaign-cell">
-                        {item.campaignId?.description || '—'}
+                        {item.campaignId?.name || item.campaignId?.description || '—'}
                       </td>
                     )}
                     <td>
@@ -226,8 +243,8 @@ const DonationHistory = () => {
                   ) : (
                     <div className="card-hours">
                       {item.hoursCommitted} hr{item.hoursCommitted !== 1 ? 's' : ''} committed
-                      {item.campaignId?.description && (
-                        <div className="card-campaign">{item.campaignId.description}</div>
+                      {(item.campaignId?.name || item.campaignId?.description) && (
+                        <div className="card-campaign">{item.campaignId.name || item.campaignId.description}</div>
                       )}
                     </div>
                   )}

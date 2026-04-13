@@ -50,7 +50,7 @@ const CampaignCard = ({ campaign }) => {
       </div>
 
       <div className="campaign-card-body">
-        <h3 className="campaign-title">{campaign.description}</h3>
+        <h3 className="campaign-title">{campaign.name || campaign.description}</h3>
 
         <div className="campaign-meta">
           <div className="meta-item">

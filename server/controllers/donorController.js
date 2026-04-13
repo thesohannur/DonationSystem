@@ -300,7 +300,7 @@ const getMyDonations = async (req, res) => {
       campaignId: { $ne: null },
     })
       .populate("ngoId", "organizationName email")
-      .populate("campaignId", "description")
+      .populate("campaignId", "name description")
       .lean();
 
     const timeItems = volunteers.map(v => ({
