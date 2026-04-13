@@ -26,9 +26,9 @@ const AdminCampaigns = () => {
 
   const handleApprove = async (id) => {
     try {
-      await api.patch(`/campaigns/${id}/approve`);
-      setCampaigns(campaigns.map(c => c._id === id ? { ...c, approved: true } : c));
-      if (selectedCampaign?._id === id) setSelectedCampaign({ ...selectedCampaign, approved: true });
+      const { data } = await api.patch(`/campaigns/${id}/approve`);
+      setCampaigns(campaigns.map(c => c._id === id ? data.data : c));
+      if (selectedCampaign?._id === id) setSelectedCampaign(data.data);
     } catch (error) {
       console.error("Failed to approve campaign", error);
       alert('Failed to approve campaign.');
@@ -37,9 +37,9 @@ const AdminCampaigns = () => {
 
   const handleReject = async (id) => {
     try {
-      await api.patch(`/campaigns/${id}/reject`);
-      setCampaigns(campaigns.map(c => c._id === id ? { ...c, approved: false, rejectFlag: 1 } : c));
-      if (selectedCampaign?._id === id) setSelectedCampaign({ ...selectedCampaign, approved: false, rejectFlag: 1 });
+      const { data } = await api.patch(`/campaigns/${id}/reject`);
+      setCampaigns(campaigns.map(c => c._id === id ? data.data : c));
+      if (selectedCampaign?._id === id) setSelectedCampaign(data.data);
     } catch (error) {
       console.error("Failed to reject campaign", error);
       alert('Failed to reject campaign.');
@@ -66,7 +66,7 @@ const AdminCampaigns = () => {
   const filtered = campaigns.filter(c => {
     if (filter === 'pending') return !c.approved && !c.rejectFlag;
     if (filter === 'approved') return c.approved;
-    if (filter === 'rejected') return c.rejectFlag > 0;
+    if (filter === 'rejected') return !c.approved && c.rejectFlag > 0;
     return true;
   });
 
@@ -99,9 +99,9 @@ const AdminCampaigns = () => {
             {f.charAt(0).toUpperCase() + f.slice(1)}
             <span className="filter-count">
               {f === 'all' ? campaigns.length :
-               f === 'pending' ? campaigns.filter(c => !c.approved && !c.rejectFlag).length :
+                f === 'pending' ? campaigns.filter(c => !c.approved && !c.rejectFlag).length :
                f === 'approved' ? campaigns.filter(c => c.approved).length :
-               campaigns.filter(c => c.rejectFlag > 0).length}
+               campaigns.filter(c => !c.approved && c.rejectFlag > 0).length}
             </span>
           </button>
         ))}

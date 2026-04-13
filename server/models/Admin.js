@@ -16,6 +16,14 @@ const adminSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  profileImageUrl: {
+    type: String,
+    default: "",
+  },
+  profileImagePublicId: {
+    type: String,
+    default: "",
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

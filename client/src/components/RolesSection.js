@@ -10,7 +10,7 @@ const RolesSection = () => {
     donor: {
       title: '💚 DONOR',
       label: 'Donor',
-      loginPath: '/donor/login',
+      loginPath: '/auth/login',
       description: 'Make a Difference',
       features: [
         'Browse active campaigns',
@@ -25,7 +25,7 @@ const RolesSection = () => {
     ngo: {
       title: '🏢 NGO',
       label: 'NGO',
-      loginPath: '/ngo/login',
+      loginPath: '/auth/login',
       description: 'Create Impact',
       features: [
         'Create fundraising campaigns',
@@ -40,7 +40,7 @@ const RolesSection = () => {
     admin: {
       title: '👑 ADMIN',
       label: 'Admin',
-      loginPath: '/admin/login',
+      loginPath: '/auth/login',
       description: 'Oversee Everything',
       features: [
         'Verify NGO registrations',

@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Donor = require("../models/Donor");
 const NGO = require("../models/NGO");
 const Admin = require("../models/Admin");
+const cloudinary = require("../config/cloudinary");
 
 // @desc    Get all users
 // @route   GET /api/admin/users
@@ -168,6 +169,80 @@ const updateAdminProfile = async (req, res) => {
   }
 };
 
+// @desc    Upload/update admin profile picture
+// @route   PATCH /api/admin/profile/picture
+// @access  Admin
+const uploadAdminProfilePicture = async (req, res) => {
+  try {
+    const { image } = req.body;
+
+    if (!image || typeof image !== "string") {
+      return res.status(400).json({ success: false, message: "Image is required" });
+    }
+
+    if (!image.startsWith("data:image/")) {
+      return res.status(400).json({ success: false, message: "Invalid image format" });
+    }
+
+    const admin = await Admin.findOne({ userId: req.user.id });
+    if (!admin) {
+      return res.status(404).json({ success: false, message: "Admin profile not found" });
+    }
+
+    if (admin.profileImagePublicId) {
+      await cloudinary.uploader.destroy(admin.profileImagePublicId);
+    }
+
+    const uploadResult = await cloudinary.uploader.upload(image, {
+      folder: "donation-system/admins",
+      resource_type: "image",
+      transformation: [
+        { width: 400, height: 400, crop: "fill", gravity: "face" },
+        { quality: "auto", fetch_format: "auto" },
+      ],
+    });
+
+    admin.profileImageUrl = uploadResult.secure_url;
+    admin.profileImagePublicId = uploadResult.public_id;
+    await admin.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile picture updated successfully",
+      data: {
+        profileImageUrl: admin.profileImageUrl,
+        profileImagePublicId: admin.profileImagePublicId,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Remove admin profile picture
+// @route   DELETE /api/admin/profile/picture
+// @access  Admin
+const removeAdminProfilePicture = async (req, res) => {
+  try {
+    const admin = await Admin.findOne({ userId: req.user.id });
+    if (!admin) {
+      return res.status(404).json({ success: false, message: "Admin profile not found" });
+    }
+
+    if (admin.profileImagePublicId) {
+      await cloudinary.uploader.destroy(admin.profileImagePublicId);
+    }
+
+    admin.profileImageUrl = "";
+    admin.profileImagePublicId = "";
+    await admin.save();
+
+    res.status(200).json({ success: true, message: "Profile picture removed successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @access  Admin
 const getDashboardStats = async (req, res) => {
   try {
@@ -215,4 +290,6 @@ module.exports = {
   getDashboardStats,
   getAdminProfile,
   updateAdminProfile,
+  uploadAdminProfilePicture,
+  removeAdminProfilePicture,
 };

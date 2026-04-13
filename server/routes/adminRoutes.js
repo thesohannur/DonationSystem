@@ -8,6 +8,8 @@ const {
   getDashboardStats,
   getAdminProfile,
   updateAdminProfile,
+  uploadAdminProfilePicture,
+  removeAdminProfilePicture,
 } = require("../controllers/adminController");
 const { protect, authorize } = require("../middleware/auth");
 
@@ -34,6 +36,12 @@ router.get("/profile", getAdminProfile);
 
 // PUT /api/admin/profile - Update current admin profile
 router.put("/profile", updateAdminProfile);
+
+// PATCH /api/admin/profile/picture - Upload/Update admin profile picture
+router.patch("/profile/picture", uploadAdminProfilePicture);
+
+// DELETE /api/admin/profile/picture - Remove admin profile picture
+router.delete("/profile/picture", removeAdminProfilePicture);
 
 // DELETE /api/admin/users/:id - Delete user
 router.delete("/users/:id", deleteUser);

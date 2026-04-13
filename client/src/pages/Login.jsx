@@ -71,6 +71,11 @@ export default function Login() {
           </div>
         </form>
 
+          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+            <Link to="/" style={{ color: '#64748b', fontSize: '0.9rem', textDecoration: 'none' }}>
+              ← Return to homepage
+            </Link>
+          </div>
       </div>
     </div>
   );

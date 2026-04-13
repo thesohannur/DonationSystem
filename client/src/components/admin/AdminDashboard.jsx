@@ -5,6 +5,7 @@ import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalDonors: 0,
@@ -20,20 +21,26 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await api.get('/admin/stats');
-        if (data.success) {
-          setStats(data.data);
+        const [statsRes, profileRes] = await Promise.all([
+          api.get('/admin/stats'),
+          api.get('/admin/profile')
+        ]);
+        if (statsRes.data.success) {
+          setStats(statsRes.data.data);
+        }
+        if (profileRes.data.success) {
+          setProfile(profileRes.data.data);
         }
       } catch (error) {
-        console.error("Error fetching dashboard stats", error);
+        console.error("Error fetching dashboard data", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStats();
+    fetchData();
   }, []);
 
   if (loading) {
@@ -49,8 +56,38 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
-      <h1>System Dashboard</h1>
-      <p>Overview of platform users and activity.</p>
+
+      {/* ── Hero Banner ── */}
+      <div className="dashboard-hero">
+        <div className="hero-bg-shapes">
+          <div className="shape shape-1" />
+          <div className="shape shape-2" />
+          <div className="shape shape-3" />
+        </div>
+        <div className="hero-content">
+          <div className="hero-copy">
+            <p className="hero-greeting">Welcome back</p>
+            <h1 className="hero-name">{profile?.fullName || 'Administrator'}</h1>
+            <p className="hero-sub">Overseeing platform health and community impact</p>
+          </div>
+          <div className="hero-profile-card">
+            <div className="hero-avatar-ring">
+              {profile?.profileImageUrl ? (
+                <img src={profile.profileImageUrl} alt="Profile" className="hero-avatar-image" />
+              ) : (
+                <div className="hero-avatar-fallback">
+                  {profile?.fullName?.charAt(0).toUpperCase() || 'A'}
+                </div>
+              )}
+            </div>
+            <div className="hero-profile-meta">
+              <span className="hero-profile-label">Admin Profile</span>
+              <strong className="hero-profile-name">{profile?.fullName || 'System Admin'}</strong>
+              <span className="hero-profile-email">{profile?.email || 'admin@shohay.org'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="dashboard-section">
         <h2 className="section-title">NGO Overview</h2>
