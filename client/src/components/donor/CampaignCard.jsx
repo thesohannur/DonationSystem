@@ -7,6 +7,10 @@ const CampaignCard = ({ campaign }) => {
   const navigate = useNavigate();
   const daysRemaining = getDaysRemaining(campaign.expirationTime);
   const acceptsBoth = campaign.acceptsMoney && campaign.acceptsTime;
+  const hasTarget = campaign.acceptsMoney && Number(campaign.targetAmount) > 0;
+  const progressPercent = hasTarget
+    ? Math.min((Number(campaign.amount || 0) / Number(campaign.targetAmount)) * 100, 100)
+    : 0;
 
   const handleDonate = () => {
     navigate(`/donor/donate/${campaign._id}`);
@@ -21,6 +25,14 @@ const CampaignCard = ({ campaign }) => {
 
   return (
     <div className="campaign-card">
+      <div className="campaign-image-wrap">
+        {campaign.imageUrl ? (
+          <img src={campaign.imageUrl} alt="Campaign" className="campaign-image" />
+        ) : (
+          <div className="campaign-image-placeholder">📷 No campaign image</div>
+        )}
+      </div>
+
       <div className="campaign-card-header">
         <div className="campaign-badges">
           {campaign.acceptsMoney && (
@@ -53,17 +65,26 @@ const CampaignCard = ({ campaign }) => {
           </div>
         </div>
 
-        {campaign.acceptsMoney ? (
+        {hasTarget ? (
           <div className="campaign-progress">
             <div className="progress-header">
-              <span className="progress-label">Amount Raised</span>
-              <span className="progress-amount">{formatCurrency(campaign.amount)}</span>
+              <span className="progress-label">Amount Raised / Target</span>
+              <span className="progress-amount">
+                {formatCurrency(campaign.amount || 0)} / {formatCurrency(campaign.targetAmount)}
+              </span>
             </div>
             <div className="progress-bar-container">
               <div
                 className="progress-bar-fill"
-                style={{ width: `${Math.min((campaign.amount / 100000) * 100, 100)}%` }}
+                style={{ width: `${progressPercent}%` }}
               />
+            </div>
+          </div>
+        ) : campaign.acceptsMoney ? (
+          <div className="campaign-progress campaign-progress--simple">
+            <div className="progress-header">
+              <span className="progress-label">Amount Raised</span>
+              <span className="progress-amount">{formatCurrency(campaign.amount || 0)}</span>
             </div>
           </div>
         ) : (
