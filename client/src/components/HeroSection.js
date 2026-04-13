@@ -26,7 +26,7 @@ const HeroSection = () => {
         <div className="hero-cta-buttons">
           <button 
             className="btn btn-primary"
-            onClick={() => scrollToSection('.roles-section', -40)}
+           onClick={() => navigate('/auth/login')}
           >
             Get Started Now
           </button>

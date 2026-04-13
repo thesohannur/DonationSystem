@@ -1,0 +1,679 @@
+.ngo-dashboard-shell {
+  min-height: 100vh;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(16, 185, 129, 0.14), transparent 34%),
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 28%),
+    linear-gradient(180deg, #f6f8fb 0%, #eef3f9 100%);
+  color: #172033;
+}
+
+.ngo-loading-shell {
+  display: grid;
+  place-items: center;
+}
+
+.ngo-loading-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.spin-icon {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.ngo-hero {
+  display: grid;
+  grid-template-columns: 1.4fr 0.9fr;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 28px;
+  border-radius: 28px;
+  color: white;
+  background: linear-gradient(135deg, #0f766e 0%, #0891b2 45%, #f59e0b 100%);
+  box-shadow: 0 24px 60px rgba(15, 118, 110, 0.22);
+}
+
+.ngo-hero-copy h1 {
+  margin: 12px 0 10px;
+  font-size: clamp(2rem, 3.2vw, 3.4rem);
+  line-height: 1.05;
+}
+
+.ngo-hero-copy p {
+  margin: 0;
+  max-width: 720px;
+  line-height: 1.65;
+  opacity: 0.92;
+}
+
+.ngo-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  width: fit-content;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ngo-hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+.ngo-hero-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 24px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(12px);
+}
+
+.ngo-avatar-ring {
+  width: 128px;
+  height: 128px;
+  padding: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+}
+
+.ngo-avatar-image,
+.ngo-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.ngo-avatar-fallback {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #ffffff, #fef3c7);
+  color: #0f766e;
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.ngo-hero-meta {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ngo-meta-label {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.8;
+}
+
+.ngo-alert {
+  margin-bottom: 16px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-weight: 600;
+}
+
+.ngo-alert-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.ngo-alert-success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.ngo-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.ngo-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.ngo-stat-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.tone-primary .ngo-stat-icon { background: linear-gradient(135deg, #0f766e, #14b8a6); }
+.tone-secondary .ngo-stat-icon { background: linear-gradient(135deg, #2563eb, #60a5fa); }
+.tone-tertiary .ngo-stat-icon { background: linear-gradient(135deg, #d97706, #f59e0b); }
+.tone-quaternary .ngo-stat-icon { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+.tone-quinary .ngo-stat-icon { background: linear-gradient(135deg, #059669, #34d399); }
+.tone-senary .ngo-stat-icon { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+
+.ngo-stat-label {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.ngo-stat-value {
+  font-size: 1.02rem;
+  color: #0f172a;
+  word-break: break-word;
+}
+
+.ngo-tab-bar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.ngo-tab-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 12px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #475569;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ngo-tab-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.ngo-tab-button.active {
+  color: white;
+  background: linear-gradient(135deg, #0f766e 0%, #0891b2 100%);
+  border-color: transparent;
+}
+
+.ngo-content-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.ngo-panel {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+.ngo-panel-span {
+  min-height: 60vh;
+}
+
+.ngo-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.ngo-panel-header h2 {
+  margin: 0 0 6px;
+  font-size: 1.35rem;
+  color: #0f172a;
+}
+
+.ngo-panel-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.text-link {
+  background: none;
+  border: none;
+  color: #0f766e;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.primary-btn,
+.secondary-btn,
+.action-btn.small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primary-btn {
+  color: white;
+  background: linear-gradient(135deg, #0f766e 0%, #0891b2 100%);
+  box-shadow: 0 12px 24px rgba(15, 118, 110, 0.22);
+}
+
+.secondary-btn {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+.primary-btn:hover,
+.secondary-btn:hover,
+.action-btn.small:hover {
+  transform: translateY(-2px);
+}
+
+.ngo-card-list,
+.ngo-campaign-list,
+.ngo-volunteer-list {
+  display: grid;
+  gap: 14px;
+}
+
+.ngo-mini-card,
+.ngo-campaign-card,
+.ngo-volunteer-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+}
+
+.ngo-mini-card {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.ngo-mini-card h3,
+.ngo-campaign-body h3,
+.ngo-volunteer-card h3 {
+  margin: 0 0 8px;
+  color: #0f172a;
+}
+
+.ngo-mini-badges,
+.ngo-campaign-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.status-pill.light {
+  background: #f8fafc;
+  color: #475569;
+}
+
+.status-approved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-review {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.ngo-mini-card-side {
+  text-align: right;
+  color: #475569;
+}
+
+.ngo-mini-card-side strong {
+  display: block;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.ngo-table-wrap {
+  overflow-x: auto;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.ngo-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.ngo-table thead {
+  background: #f8fafc;
+}
+
+.ngo-table th,
+.ngo-table td {
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(226, 232, 240, 1);
+  vertical-align: top;
+}
+
+.ngo-table th {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+}
+
+.empty-state-inline {
+  padding: 18px;
+  text-align: center;
+  color: #64748b;
+}
+
+.ngo-campaign-grid,
+.ngo-profile-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 18px;
+}
+
+.ngo-campaign-image {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #ecfeff 0%, #e2e8f0 100%);
+}
+
+.ngo-campaign-image img,
+.ngo-image-preview,
+.ngo-profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ngo-campaign-placeholder,
+.ngo-image-placeholder,
+.ngo-profile-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: #0f766e;
+  font-weight: 800;
+}
+
+.ngo-campaign-body {
+  display: grid;
+  gap: 10px;
+}
+
+.ngo-campaign-meta,
+.ngo-volunteer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  color: #475569;
+  font-size: 0.92rem;
+}
+
+.ngo-card-actions,
+.ngo-form-actions,
+.ngo-hero-actions,
+.ngo-profile-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.action-btn.small {
+  padding: 10px 12px;
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.action-btn.small.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.ngo-form-card {
+  padding: 18px;
+  border-radius: 20px;
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.ngo-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.ngo-form-header h3 {
+  margin: 0;
+}
+
+.hidden-input {
+  display: none;
+}
+
+.ngo-image-drop {
+  border: 2px dashed rgba(15, 118, 110, 0.24);
+  border-radius: 18px;
+  background: white;
+  min-height: 200px;
+  overflow: hidden;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+
+.ngo-image-placeholder {
+  min-height: 200px;
+  gap: 10px;
+  color: #0f766e;
+}
+
+.ngo-field {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.ngo-field.full {
+  grid-column: 1 / -1;
+}
+
+.ngo-field span {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ngo-field input,
+.ngo-field textarea {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font: inherit;
+  color: #0f172a;
+  background: white;
+  outline: none;
+}
+
+.ngo-field input:focus,
+.ngo-field textarea:focus {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.08);
+}
+
+.ngo-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ngo-toggle-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.ngo-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: white;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  cursor: pointer;
+  font-weight: 700;
+  color: #334155;
+}
+
+.ngo-switch.active {
+  border-color: rgba(15, 118, 110, 0.35);
+  background: rgba(15, 118, 110, 0.08);
+}
+
+.ngo-switch input {
+  margin: 0;
+}
+
+.ngo-profile-grid {
+  align-items: start;
+}
+
+.ngo-profile-card {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.ngo-profile-picture {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ecfeff 0%, #fef3c7 100%);
+}
+
+.ngo-profile-fallback {
+  font-size: 2rem;
+  color: #0f766e;
+}
+
+.muted {
+  color: #64748b;
+}
+
+@media (max-width: 1100px) {
+  .ngo-stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ngo-campaign-grid,
+  .ngo-profile-grid,
+  .ngo-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 780px) {
+  .ngo-dashboard-shell {
+    padding: 16px;
+  }
+
+  .ngo-stat-grid,
+  .ngo-tab-bar,
+  .ngo-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ngo-mini-card {
+    grid-template-columns: 1fr;
+  }
+
+  .ngo-mini-card-side {
+    text-align: left;
+  }
+
+  .ngo-panel,
+  .ngo-hero {
+    padding: 18px;
+  }
+}

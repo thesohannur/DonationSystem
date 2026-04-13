@@ -18,7 +18,7 @@ export default function Login() {
       const { data } = await api.post('/auth/login', { email, password });
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.user.role);
-      const redirect = { DONOR: '/donor/dashboard', NGO: '/donor/dashboard', ADMIN: '/admin/dashboard' };
+      const redirect = { DONOR: '/donor/dashboard', NGO: '/ngo/dashboard', ADMIN: '/admin/dashboard' };
       navigate(redirect[data.user.role] || '/');
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password.');

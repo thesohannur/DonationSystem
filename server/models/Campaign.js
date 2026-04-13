@@ -29,6 +29,14 @@ const campaignSchema = new mongoose.Schema({
     type: String,
     required: [true, "Description is required"],
   },
+  imageUrl: {
+    type: String,
+    default: "",
+  },
+  imagePublicId: {
+    type: String,
+    default: "",
+  },
   manualDeletionAllowed: {
     type: Boolean,
     default: false,

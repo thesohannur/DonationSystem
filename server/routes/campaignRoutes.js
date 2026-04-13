@@ -4,6 +4,7 @@ const {
   getAllCampaigns,
   getCampaign,
   getCampaignsByNGO,
+  getMyCampaigns,
   createCampaign,
   updateCampaign,
   approveCampaign,
@@ -21,6 +22,9 @@ router.get("/filter", getFilteredCampaigns);
 
 // GET /api/campaigns/ngo/:email - Get campaigns by NGO
 router.get("/ngo/:email", protect, getCampaignsByNGO);
+
+// GET /api/campaigns/me - Get campaigns for the current NGO
+router.get("/me", protect, authorize("NGO"), getMyCampaigns);
 
 // GET /api/campaigns/:id - Get single campaign
 router.get("/:id", getCampaign);
