@@ -88,7 +88,7 @@ The following screenshots demonstrate the major features and user interfaces of 
 
 ---
 
-## 📱 Project Scope
+## Project Scope
 
 Shohay is designed to solve the problem of fragmented donation workflows by providing a centralized platform where:
 
@@ -100,9 +100,9 @@ The system supports both **monetary donations** and **time-based volunteering**,
 
 ---
 
-## 👥 User Roles & Features
+## User Roles & Features
 
-### 1. 💚 Donor
+### 1. Donor
 
 > **Primary Goal:** Contribute to causes and track donations
 
@@ -115,7 +115,7 @@ The system supports both **monetary donations** and **time-based volunteering**,
 | ✅ Donation History | View all past contributions with status (Pending / Success / Failed) |
 | ✅ Profile Management | Update personal information |
 
-### 2. 🏢 NGO (Non-Governmental Organization)
+### 2. NGO (Non-Governmental Organization)
 
 > **Primary Goal:** Create campaigns and manage donations
 
@@ -129,7 +129,7 @@ The system supports both **monetary donations** and **time-based volunteering**,
 | ✅ Verification System | NGOs require admin approval before full access |
 | ✅ Organization Profile | Maintain organization details and focus areas |
 
-### 3. 🔑 Admin
+### 3. Admin
 
 > **Primary Goal:** Oversee system and manage users
 
@@ -144,7 +144,7 @@ The system supports both **monetary donations** and **time-based volunteering**,
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer      | Technology                            |
 | ---------- | ------------------------------------- |
@@ -156,7 +156,7 @@ The system supports both **monetary donations** and **time-based volunteering**,
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ```
 ┌─────────────────┐        ┌──────────────────┐        ┌───────────┐
@@ -171,7 +171,7 @@ The system supports both **monetary donations** and **time-based volunteering**,
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 DonationSystem/
@@ -233,7 +233,7 @@ DonationSystem/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -282,7 +282,7 @@ DonationSystem/
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 | Method   | Endpoint                         | Description                       | Auth Required   |
 | -------- | -------------------------------- | --------------------------------- | --------------- |
@@ -303,7 +303,7 @@ DonationSystem/
 
 ---
 
-## ⚙️ Environment Variables
+## Environment Variables
 
 ### Server (`server/.env`)
 
@@ -322,7 +322,7 @@ DonationSystem/
 ---
 
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
