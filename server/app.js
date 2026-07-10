@@ -11,8 +11,22 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:3002", // Your local frontend port
+  process.env.FRONTEND_URL  // Your production frontend URL (e.g., https://my-app.vercel.app)
+];
+
 app.use(cors({
-  origin: "http://localhost:3002", 
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "PATCH", "DELETE", "PUT"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
